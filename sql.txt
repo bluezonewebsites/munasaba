@@ -1,0 +1,2 @@
+ALTER TABLE `regions` ADD `created_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `lng`, ADD `updated_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `created_at`, ADD `deleted_at` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP AFTER `updated_at`;
+php artisan make:model  TeacherOnClass -mrc
