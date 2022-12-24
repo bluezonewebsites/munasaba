@@ -16,6 +16,7 @@ class Country extends Model
         'currency_ar',
         'code',
         'hide',
+        'count_phone',
         'blocked',
         'pic',
     ];
