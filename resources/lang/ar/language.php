@@ -970,7 +970,9 @@ return [
     'approved_btn' => 'موافقه علي الحساب',
     'deApproved_btn' => 'الغاء موافقه علي الحساب',
     'deApproved' => 'غير موافق عليه',
-    'blocked' => 'محظور',
+    'blocked' => 'تم الحظر بنجاح',
+    'unblocked' => ' تم فك الحظر',
+
     'pay_counts' => 'القيم المراد دفعها',
     'create_ads_for_day' => 'رسوم اضافه اعلان لليوم',
     'streets' => 'الشــوارع',

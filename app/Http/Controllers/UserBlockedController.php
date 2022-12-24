@@ -14,14 +14,14 @@ class UserBlockedController extends Controller
         $blocked_user=UserBlocked::where('to_uid',$to_uid)->where('from_uid',$from_uid)->first();
         if($blocked_user){
             $blocked_user->delete();
-            return $this->apiResponse($request,"UnBlocked Sucsess", $blocked_user, true);
+            return $this->apiResponse($request,trans('language.unblocked'), null, true);
 
         }else{
             $blocked_user=UserBlocked::create([
                 'to_uid' => $to_uid,
                 'from_uid' => $from_uid,
             ]);
-            return $this->apiResponse($request,"Blocked Sucsess", $blocked_user, true);
+            return $this->apiResponse($request,trans('language.blocked'), $blocked_user, true);
 
         }
         

@@ -247,6 +247,8 @@ return [
     'pending' => 'pending',
     'new' => 'new',
     'Blocked' => 'Blocked',
+    'unBlocked' => 'Unblocked Sucsess',
+
     'favourite' => 'Favourite',
     'technicain_order_add' => 'Technicain has been added to order .',
     'addTechnicain_msg' => 'please Add Technicain to order ?',
