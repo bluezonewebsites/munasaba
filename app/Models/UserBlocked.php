@@ -9,7 +9,10 @@ class UserBlocked extends Model
 {
     use HasFactory;
     protected $table='user_blocked';
-    
+    protected $fillable = [
+        "to_uid",
+        "from_uid",
+    ];
     public function user(){
         return $this->belongsTo(User::class,'from_uid','id');
     }
