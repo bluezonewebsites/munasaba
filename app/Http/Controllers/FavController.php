@@ -13,80 +13,12 @@ class FavController extends ApiController
         $fav = Fav::where('uid',$request['uid'])->all();
         return $this->apiResponse($request, trans('language.message'), $fav, true);
     }
+    public function makeFavProd(Request $request){
+        $fav_prod = Fav::create([
+            'uid' => $request['uid'],
+            'prod_id' => $request['prod_id'],
+        ]);
+        return $this->apiResponse($request, trans('language.created'), $fav_prod, true);
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Fav  $fav
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Fav $fav)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Fav  $fav
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Fav $fav)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Fav  $fav
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Fav $fav)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Fav  $fav
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Fav $fav)
-    {
-        //
     }
 }

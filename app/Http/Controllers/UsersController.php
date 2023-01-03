@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserRate;
+use App\Models\UserReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Hash;
@@ -113,4 +114,27 @@ class UsersController extends Controller
     {
         //
     }
+
+    public function rateUser(Request $request)
+    {
+        $rate_user = UserRate::create([
+            'uid' => $request['uid'],
+            'user_rated_id' => $request['user_rated_id'],
+            'rate' => isset($request['rate']) ? $request['rate'] : 0,
+            'comment' => isset($request['comment']) ? $request['comment'] : null,
+        ]);
+        return $this->apiResponse($request, trans('language.created'), $rate_user, true);
+    }
+
+    public function reportUser($request)
+    {
+        $report_user = UserReport::create([
+            'uid' => $request['uid'],
+            'from_uid' => $request['from_uid'],
+            'reson' => isset($request['reson']) ? $request['reson'] : null,
+        ]);
+        return $this->apiResponse($request, trans('language.created'), $report_user, true);
+    }
+
+
 }

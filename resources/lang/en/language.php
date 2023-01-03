@@ -238,6 +238,8 @@ return [
     'country_add' => 'New country has been created',
     'country_edit' => 'data of country has been updated',
     'country_deleted' => 'data of country has been deleted',
+    'deleted' => 'Deleted Sucsess',
+    'created'=>'Created Sucsess',
     'mobile_verified' => 'Mobile Verified',
     'mobile_verified_yes' => 'Mobile Number verified',
     'mobile_verified_no' => 'Mobile Number Not verified',
@@ -249,6 +251,7 @@ return [
     'Blocked' => 'Blocked',
     'unBlocked' => 'Unblocked Sucsess',
 
+    
     'favourite' => 'Favourite',
     'technicain_order_add' => 'Technicain has been added to order .',
     'addTechnicain_msg' => 'please Add Technicain to order ?',

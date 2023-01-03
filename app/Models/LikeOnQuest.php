@@ -5,21 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProdReport extends Model
+class LikeOnQuest extends Model
 {
-    use HasFactory;    
-    protected $table='prod_reports';
+    use HasFactory;
+    protected $table='like_on_replay';
+
     protected $fillable = [
+        'comment_id',
         'uid',
-        'prod_id',
-        'reason',
+        'like_type',
     ];
 
     public function user(){
         return $this->belongsTo(User::class);
     }
-    public function prod(){
-        return $this->belongsTo(Prod::class);
+    public function quest_comment(){
+        return $this->belongsTo(CommentOnQuestion::class);
     }
-    
+
 }

@@ -5,14 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ProdReport extends Model
+class CommentOnProd extends Model
 {
-    use HasFactory;    
-    protected $table='prod_reports';
+    use HasFactory;
+    
+    protected $table='prods_rates';
     protected $fillable = [
-        'uid',
         'prod_id',
-        'reason',
+        'uid',
+        'rating',
+        'comment',
+
     ];
 
     public function user(){
@@ -21,5 +24,4 @@ class ProdReport extends Model
     public function prod(){
         return $this->belongsTo(Prod::class);
     }
-    
 }

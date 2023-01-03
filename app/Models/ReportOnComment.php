@@ -4,22 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-class ProdReport extends Model
+//report comment on prod
+class ReportOnComment extends Model
 {
-    use HasFactory;    
-    protected $table='prod_reports';
+    use HasFactory;
+    
+    protected $table='comment_reports';
+
     protected $fillable = [
+        'comment_id',
         'uid',
-        'prod_id',
-        'reason',
+        'reson'
+
     ];
 
     public function user(){
         return $this->belongsTo(User::class);
     }
-    public function prod(){
-        return $this->belongsTo(Prod::class);
+    public function comment(){
+        return $this->belongsTo(CommentOnProd::class);
     }
-    
+
 }
