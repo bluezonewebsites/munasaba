@@ -26,7 +26,11 @@ class QuestionController extends ApiController
         $uid = $request['uid'];
         $country_id = $request['country_id'];
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        $question = Question::where('country_id', $country_id)->where('uid', '!=', $blocked_user)->get();
+        $question = Question::where('country_id', $country_id);
+        if($blocked_user){
+            $question->where('uid', '!=', $blocked_user);
+        }
+        $question=$question->get();
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
@@ -101,7 +105,7 @@ class QuestionController extends ApiController
         ]);
         return $this->apiResponse($request, trans('language.created'), $like_on_quest, true);
     }
-    
+
     public function deleteQuestion($request)
     {
         $question = Question::where('id', $request['id'])->get();
