@@ -38,7 +38,14 @@ class QuestionController extends ApiController
     {
         $keyword = $request['keyword'];
         $country_id = $request['country_id'];
-        $question = Question::where('country_id', $country_id)->where('quest', 'LIKE', '%' . $keyword . '%')->get();
+        $uid = $request['uid'];
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        
+        $question = Question::where('country_id', $country_id)->where('quest', 'LIKE', '%' . $keyword . '%');
+        if($blocked_user){
+            $question->where('uid', '!=', $blocked_user);
+        }
+        $question=$question->get();
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
     public function storeQuestion(Request $request)
