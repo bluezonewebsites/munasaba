@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class LikeOnQuest extends Model
 {
     use HasFactory;
+    // like on comments on Quest table
     protected $table='like_on_replay';
 
     protected $fillable = [
