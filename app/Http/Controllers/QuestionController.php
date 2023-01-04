@@ -113,10 +113,9 @@ class QuestionController extends ApiController
         return $this->apiResponse($request, trans('language.created'), $like_on_quest, true);
     }
 
-    public function deleteQuestion($request)
+    public function deleteQuestion(Request $request)
     {
-        $question = Question::where('id', $request['id'])->get();
-        $question->delete();
+        Question::findOrFail($request['id'])->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
     }
     /**
