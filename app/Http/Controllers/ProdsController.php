@@ -221,7 +221,6 @@ class ProdsController extends ApiController
     {
         $prod=Prod::findOrfail($request['id']);
         $prod->prodImage()->delete();
-        $prod->prodRate()->delete();
         $prod->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
     }
