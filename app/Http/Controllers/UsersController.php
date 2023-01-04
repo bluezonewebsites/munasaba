@@ -103,7 +103,7 @@ class UsersController extends Controller
             if (Hash::check($password, $user->pass)) {
                 //$token = $request->token;
                 //$accessToken = PersonalAccessToken::findToken($token);
-                return $this->sendResponse($request, trans('language.login'), $user, true, $accessToken, 200);
+                return $this->sendResponse($request, trans('language.login'), $user, true, 200);
             } else {
                 return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
             }
