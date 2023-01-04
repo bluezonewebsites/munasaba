@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-// replay on comment on question
+// replay on comment on prod
 class ReplayOnComment extends Model
 {
     use HasFactory;
@@ -22,6 +22,6 @@ class ReplayOnComment extends Model
         return $this->belongsTo(User::class);
     }
     public function comment(){
-        return $this->belongsTo(CommentOnQuestion::class);
+        return $this->belongsTo(CommentOnProd::class);
     }
 }

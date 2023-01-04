@@ -68,6 +68,7 @@ Route::post('prods_delete',[ProdsController::class,'deleteProds']);
 Route::post('comment_on_prods',[ProdsController::class,'makeCommentOnProd']);
 Route::post('report_on_prods',[ProdsController::class,'makeReportOnProd']);
 Route::post('like_prods',[ProdsController::class,'makeLikeOnCommentOrReplayOnProd']);
+Route::post('replay_on_comment',[ProdsController::class,'makeReplayOnComment']);
 
 
 
@@ -105,7 +106,6 @@ Route::post('questions_search',[QuestionController::class,'searchQuestion']);
 Route::post('questions_add',[QuestionController::class,'storeQuestion']);
 Route::post('questions_delete',[QuestionController::class,'deleteQuestion']);
 Route::post('comment_on_questions',[QuestionController::class,'makeCommentOnQuestion']);
-Route::post('replay_on_comment',[QuestionController::class,'makeReplayOnComment']);
 Route::post('like_on_questions',[QuestionController::class,'makeLikeOnCommentOrReplayOnQuestion']);
 
 

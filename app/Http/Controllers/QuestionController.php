@@ -90,16 +90,7 @@ class QuestionController extends ApiController
         return $this->apiResponse($request, trans('language.created'), $comment_on_question, true);
     }
 
-    public function makeReplayOnComment(Request $request)
-    {
-        $replay_on_comment = ReplayOnComment::create([
-            'uid' => $request['uid'],
-            'comment_id' => $request['comment_id'],
-            'mention' => isset($request['mention']) ? $request['mention'] : '-',
-            'comment' => isset($request['comment']) ? $request['comment'] : null,
-        ]);
-        return $this->apiResponse($request, trans('language.created'), $replay_on_comment, true);
-    }
+    
 
     public function makeLikeOnCommentOrReplayOnQuestion(Request $request)
     {
