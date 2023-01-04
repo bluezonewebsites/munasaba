@@ -79,7 +79,7 @@ class QuestionController extends ApiController
 
         }
     }
-    public function makeCommentOnQuestion($request)
+    public function makeCommentOnQuestion(Request $request)
     {
         $comment_on_question = CommentOnQuestion::create([
             'uid' => $request['uid'],
@@ -90,7 +90,7 @@ class QuestionController extends ApiController
         return $this->apiResponse($request, trans('language.created'), $comment_on_question, true);
     }
 
-    public function makeReplayOnComment($request)
+    public function makeReplayOnComment(Request $request)
     {
         $replay_on_comment = ReplayOnComment::create([
             'uid' => $request['uid'],
