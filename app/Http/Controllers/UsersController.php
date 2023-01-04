@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserBlocked;
 use App\Models\UserRate;
 use App\Models\UserReport;
 use Illuminate\Http\Request;
@@ -133,8 +134,14 @@ class UsersController extends Controller
     {
         $keyword = $request['keyword'];
         $country_id = $request['country_id'];
-        $prods = User::where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('last_name', 'LIKE', '%' . $keyword . '%')->get();
-        return $this->apiResponse($request, trans('language.message'), $prods, true);
+        $uid = $request['uid'];
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        $users = User::where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('last_name', 'LIKE', '%' . $keyword . '%');
+        if($blocked_user){
+            $users->where('id', '!=', $blocked_user);
+        }
+        $users=$users->get();
+        return $this->apiResponse($request, trans('language.message'), $users, true);
     }
     public function login(Request $request)
     {

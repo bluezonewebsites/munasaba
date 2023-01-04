@@ -13,6 +13,7 @@ use App\Models\LikeOnProd;
 use App\Models\ProdImage;
 use App\Models\ProdReport;
 use App\Models\ReplayOnComment;
+use App\Models\UserBlocked;
 
 class ProdsController extends ApiController
 {
@@ -80,7 +81,14 @@ class ProdsController extends ApiController
     {
         $keyword = $request['keyword'];
         $country_id = $request['country_id'];
-        $prods = Prod::where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('descr', 'LIKE', '%' . $keyword . '%')->get();
+        $uid = $request['uid'];
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        $prods = Prod::where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('descr', 'LIKE', '%' . $keyword . '%');
+        if($blocked_user){
+            $prods->where('uid', '!=', $blocked_user);
+        }
+        $prods=$prods->get();
+    
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
