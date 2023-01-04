@@ -110,11 +110,20 @@ class ProdsController extends ApiController
     {
         //type == 1 -> like on comment 
         //type ==0 ->  like on replay
-        $like_on_prod = LikeOnProd::create([
-            'uid' => $request['uid'],
-            'comment_id' => $request['comment_id'],
-            'like_type' => isset($request['like_type']) ? $request['like_type'] : 1,
-        ]);
+        $like = LikeOnProd::where('uid', $request['uid'])
+            ->where('comment_id', $request['comment_id'])
+            ->where('like_type', $request['like_type'])
+            ->first();
+        if ($like) {
+            $like->delete();
+            return $this->apiResponse($request, trans('language.deleted'), null, true);
+        } else {
+            $like_on_prod = LikeOnProd::create([
+                'uid' => $request['uid'],
+                'comment_id' => $request['comment_id'],
+                'like_type' => isset($request['like_type']) ? $request['like_type'] : 1,
+            ]);
+        }
         return $this->apiResponse($request, trans('language.created'), $like_on_prod, true);
     }
 
@@ -202,8 +211,7 @@ class ProdsController extends ApiController
 
     public function deleteProds(Request $request)
     {
-        $prod = Prod::where('id', $request['id'])->get();
-        $prod->delete();
+        Prod::findOrfail($request['id'])->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
     }
 }
