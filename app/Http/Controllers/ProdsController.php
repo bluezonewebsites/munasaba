@@ -25,7 +25,7 @@ class ProdsController extends ApiController
         if (isset($request['city_id'])) {
             $prods->where('city_id', $request['city_id']);
         }
-        $prods->get();
+        $prods=$prods->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -41,7 +41,7 @@ class ProdsController extends ApiController
         if (isset($request['sub_cat_id'])) {
             $prods->where('sub_cat_id', $request['sub_cat_id']);
         }
-        $prods->get();
+        $prods=$prods->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -61,7 +61,7 @@ class ProdsController extends ApiController
         if (isset($request['newest'])) {
             $prods->OrderBy('created_at', 'DESC');
         }
-        $prods->get();
+        $prods=$prods->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
