@@ -114,6 +114,31 @@ class QuestionController extends ApiController
         return $this->apiResponse($request, trans('language.created'), $like_on_quest, true);
     }
 
+    public function editQuestion(Request $request)
+    {
+        $question = Question::findOrFail($request['id']);
+        if (!$question) {
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
+        $folder = 'image/questions';
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $ext = $request->file('image')->extension();
+            $name = time() . '.' . $ext;
+            $img = 'questions/' . $name;
+            $name = public_path($folder) . '/' . $name;
+            move_uploaded_file($image, $name);
+            $question->pic = $img;
+        }
+        $question->quest = isset($request->quest) ? $request->quest : $question->quest;
+
+        $question->country_id = isset($request->country_id) ? $request->country_id : $question->country_id;
+        $question->city_id = isset($request->city_id) ? $request->city_id : $question->city_id;
+
+        $question->save();
+        return $this->apiResponse($request, trans('language.update_profile'), $question, true);
+    }
+
     public function deleteQuestion(Request $request)
     {
         Question::findOrFail($request['id'])->delete();

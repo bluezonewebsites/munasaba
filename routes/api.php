@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategoriesController;
 use App\Http\Controllers\CitiesController;
 use App\Http\Controllers\CountryController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\UserBlockedController;
 use App\Http\Controllers\UserRateController;
 use App\Http\Controllers\UserReportController;
 use App\Http\Controllers\UsersController;
+use App\Models\Admin;
 use App\Models\Follower;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -41,7 +43,10 @@ Route::post('signup',[UsersController::class,'create']);
 Route::post('rate_user',[UsersController::class,'rateUser']);
 Route::post('report_user',[UsersController::class,'reportUser']);
 Route::post('users_search',[UsersController::class,'searchUsers']);
+Route::post('user_edit',[UsersController::class,'editProfile']);
 
+Route::post('about',[AdminController::class,'about']);
+Route::post('contact_us',[AdminController::class,'contactUs']);
 
 Route::post('users_pending',[PendingUserController::class,'pendingUser']);
 
@@ -107,6 +112,6 @@ Route::post('questions_add',[QuestionController::class,'storeQuestion']);
 Route::post('questions_delete',[QuestionController::class,'deleteQuestion']);
 Route::post('comment_on_questions',[QuestionController::class,'makeCommentOnQuestion']);
 Route::post('like_on_questions',[QuestionController::class,'makeLikeOnCommentOrReplayOnQuestion']);
-
+Route::post('question_edit',[QuestionController::class,'editQuestion']);
 
 

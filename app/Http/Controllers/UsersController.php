@@ -76,6 +76,59 @@ class UsersController extends Controller
 
         }
     }
+
+
+    public function editProfile(Request $request)
+    {
+        $user = User::findOrFail($request['id']);
+        if (!$user) {
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
+        $validator = Validator::make($request->all(), [
+            'mobile' => 'required',
+            'country_id' => 'required|exists:countries,id',
+        ]);
+        if ($validator->fails()) {
+            $errors = is_array($validator->errors()->all()) ? $validator->errors()->all() : [$validator->errors()->all()];
+            return $this->apiResponse($request, $errors, null, false, 500);
+        }
+        $folder = 'image/users';
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $ext = $request->file('image')->extension();
+            $name = time() . '.' . $ext;
+            $img = 'users/' . $name;
+            $name = public_path($folder) . '/' . $name;
+            move_uploaded_file($image, $name);
+            $user->pic = $img;
+        }
+        if ($request->hasFile('cover')) {
+            $image = $request->file('cover');
+            $ext = $request->file('cover')->extension();
+            $name = time() . '.' . $ext;
+            $cover_img = 'users/' . $name;
+            $name = public_path($folder) . '/' . $name;
+            move_uploaded_file($image, $name);
+            $user->cover = $cover_img;
+        }
+        $user->name = isset($request->name) ? $request->name : $user->name;
+        $user->last_name = isset($request->last_name) ? $request->last_name : $user->last_name;
+        $user->username = isset($request->username) ? $request->username : $user->username;
+        $user->email = isset($request->email) ? $request->email : $user->email;
+        $user->mobile = isset($request->mobile) ? $request->mobile : $user->mobile;
+
+        $user->country_id = isset($request->country_id) ? $request->country_id : $user->country_id;
+        $user->city_id = isset($request->city_id) ? $request->city_id : $user->city_id;
+        $user->region_id = isset($request->region_id) ? $request->region_id : $user->region_id;
+
+
+        $user->bio = isset($request->bio) ? $request->bio : $user->bio;
+        $user->note = isset($request->note) ? $request->note : $user->note;
+
+        $user->save();
+        return $this->apiResponse($request, trans('language.update_profile'), $user, true);
+    }
+
     public function searchUsers(Request $request)
     {
         $keyword = $request['keyword'];
@@ -135,4 +188,5 @@ class UsersController extends Controller
         ]);
         return $this->apiResponse($request, trans('language.created'), $report_user, true);
     }
+    
 }

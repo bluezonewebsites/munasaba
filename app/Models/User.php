@@ -29,6 +29,10 @@ class User extends Authenticatable
         'city_id',
         'region_id',
         'pic',
+        'cover',
+        'verified',
+        'blocked',
+        'bio',
         'nots',
         'regid'
     ];
