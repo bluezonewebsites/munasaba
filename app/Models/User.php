@@ -28,7 +28,7 @@ class User extends Authenticatable
         'country_id',
         'city_id',
         'region_id',
-        'image',
+        'pic',
         'nots',
         'regid'
     ];
@@ -51,6 +51,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    protected $appends=[
+        'image',
+    ];
+    public function getImageAttribute()
+    {
+        return asset('image/' . $this->pic);
+    }
     public function user_block_from(){
         return $this->hasMany(UserBlocked::class,'from_uid','id');
     }

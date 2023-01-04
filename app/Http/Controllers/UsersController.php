@@ -36,7 +36,15 @@ class UsersController extends Controller
         try {
             DB::beginTransaction();
             $phone_code = rand(10000, 99999);
-
+            $folder = 'image/users/';
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $ext = $request->file('image')->extension();
+                $name = time() . '.' . $ext;
+                $image_name = 'users/' . $name;
+                $name = public_path($folder) . '/' . $name;
+                move_uploaded_file($image, $name);
+            }
             $user = User::create([
                 'name' => $data['name'],
                 'username' => isset($data['username']) ? $data['username'] : null,
@@ -50,6 +58,7 @@ class UsersController extends Controller
                 'regid' => isset($data['regid']) ? $data['regid'] : null,
                 'remember_token' => Str::random(10),
                 'pass' => Hash::make($request->password),
+                'pic' => ($image_name) ? $image_name : null,
                 'activation_code' => $phone_code,
             ]);
             Auth::login($user);
@@ -94,12 +103,9 @@ class UsersController extends Controller
             if (Hash::check($password, $user->pass)) {
                 //$token = $request->token;
                 //$accessToken = PersonalAccessToken::findToken($token);
-                    return $this->sendResponse($request, trans('language.login'), $user, true, $accessToken, 200);
-                
-            }
-            else{
+                return $this->sendResponse($request, trans('language.login'), $user, true, $accessToken, 200);
+            } else {
                 return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
-
             }
         }
     }
@@ -129,6 +135,4 @@ class UsersController extends Controller
         ]);
         return $this->apiResponse($request, trans('language.created'), $report_user, true);
     }
-
-
 }
