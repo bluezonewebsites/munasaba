@@ -178,7 +178,7 @@ class ProdsController extends ApiController
                 'duration_use' => isset($data['duration_use']) ? $data['duration_use'] : null,
                 'prod_size' => isset($data['prod_size']) ? $data['prod_size'] : null,
                 'sell_cost' => isset($data['sell_cost']) ? $data['sell_cost'] : null,
-                'img' => $image_name,
+                'img' => isset($request['main_image']) ? $image_name : null,
 
             ]);
             if (isset($request['sub_image'])) {

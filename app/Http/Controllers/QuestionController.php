@@ -67,7 +67,7 @@ class QuestionController extends ApiController
                 'quest' => $data['quest'],
                 'country_id' => isset($data['country_id']) ? $data['country_id'] : 6,
                 'city_id' => isset($data['city_id']) ? $data['city_id'] : null,
-                'pic' => ($image_name) ? $image_name : null,
+                'pic' => isset($request['image']) ? $image_name : null,
             ]);
 
             DB::commit();

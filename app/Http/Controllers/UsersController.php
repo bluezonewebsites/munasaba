@@ -58,7 +58,7 @@ class UsersController extends Controller
                 'regid' => isset($data['regid']) ? $data['regid'] : null,
                 'remember_token' => Str::random(10),
                 'pass' => Hash::make($request->password),
-                'pic' => ($image_name) ? $image_name : null,
+                'pic' => isset($request['image']) ? $image_name : null,
                 'activation_code' => $phone_code,
             ]);
             Auth::login($user);
