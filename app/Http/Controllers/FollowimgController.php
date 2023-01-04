@@ -10,7 +10,7 @@ class FollowimgController extends ApiController
 {
     public function getAllFollowingByUserid(Request $request)
     {
-        $followimg = Followimg::where('uid',$request['uid'])->all();
+        $followimg = Followimg::where('uid',$request['uid'])->get();
         return $this->apiResponse($request, trans('language.message'), $followimg, true);
     }
     /**

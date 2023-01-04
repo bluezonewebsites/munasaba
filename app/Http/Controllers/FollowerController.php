@@ -11,7 +11,7 @@ class FollowerController extends ApiController
 
     public function getAllFollowerByUserid(Request $request)
     {
-        $follower = Follower::where('uid',$request['uid'])->all();
+        $follower = Follower::where('uid',$request['uid'])->get();
         return $this->apiResponse($request, trans('language.message'), $follower, true);
     }
     /**
