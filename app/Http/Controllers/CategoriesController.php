@@ -13,7 +13,7 @@ class CategoriesController extends  ApiController
 
     public function getAllCategories(Request $request)
     {
-        $categories = Category::Active()->get();
+        $categories = Category::Active()->where('cat_id',0)->get();
         return $this->apiResponse($request, trans('language.message'), $categories, true);
     }
     public function getAllSubCategories(Request $request)
