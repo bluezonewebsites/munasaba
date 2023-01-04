@@ -58,13 +58,8 @@ class UsersController extends Controller
             $accessToken = $token->plainTextToken;
             // dd($accessToken);
 
-            $data = [
-                'user' => $user,
-                'token' => $accessToken
-            ];
-
             DB::commit();
-            return $this->apiResponse($request, trans('language.login'), $data, true);
+            return $this->apiResponse($request, trans('language.login'), $user, true);
         } catch (\Exception $e) {
             DB::rollback();
             return $e->getMessage();
@@ -97,15 +92,14 @@ class UsersController extends Controller
         } else {
             $password = $request->password;
             if (Hash::check($password, $user->pass)) {
-                $token = $request->token;
-                $accessToken = PersonalAccessToken::findToken($token);
-                if ($accessToken) {
+                //$token = $request->token;
+                //$accessToken = PersonalAccessToken::findToken($token);
                     return $this->sendResponse($request, trans('language.login'), $user, true, $accessToken, 200);
-                }
-                else{
-                    return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+                
+            }
+            else{
+                return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
 
-                }
             }
         }
     }
