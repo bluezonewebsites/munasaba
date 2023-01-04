@@ -179,7 +179,7 @@ class UsersController extends Controller
         return $this->apiResponse($request, trans('language.created'), $rate_user, true);
     }
 
-    public function reportUser($request)
+    public function reportUser(Request $request)
     {
         $report_user = UserReport::create([
             'uid' => $request['uid'],
