@@ -21,7 +21,9 @@ class ProdsController extends ApiController
     {
         $prods = Prod::where('country_id', $request['country_id'])
             ->with('prodImage:prod_id,img,mtype')
-            ->with('user:id,name');
+            ->with('user')
+            ->withCount('comments')
+            ->with('country:id,currency_ar');
         if (isset($request['city_id'])) {
             $prods->where('city_id', $request['city_id']);
         }
@@ -37,7 +39,9 @@ class ProdsController extends ApiController
         $cat_id = $request['cat_id'];
         $country_id = $request['country_id'];
         $prods = Prod::where('country_id', $country_id)->where('cat_id', $cat_id)
-            ->with('prodImage:prod_id,img,mtype')->with('user:id,name');
+            ->with('prodImage:prod_id,img,mtype')->with('user')
+            ->withCount('comments')
+            ->with('country:id,currency_ar');
         if (isset($request['sub_cat_id'])) {
             $prods->where('sub_cat_id', $request['sub_cat_id']);
         }
@@ -51,7 +55,22 @@ class ProdsController extends ApiController
     {
         $country_id = $request['country_id'];
         $prods = Prod::where('country_id', $country_id)
-            ->with('prodImage:prod_id,img,mtype')->with('user:id,name');
+            ->with('prodImage:prod_id,img,mtype')
+            ->with('user')
+            ->withCount('comments')
+            ->with('country:id,currency_ar');
+        if (isset($request['city_id'])) {
+                $prods->where('city_id', $request['city_id']);
+            }
+        if (isset($request['cat_id'])) {
+            $prods->where('cat_id', $request['cat_id']);
+        }
+        if (isset($request['sub_cat_id'])) {
+            $prods->where('sub_cat_id', $request['sub_cat_id']);
+        }
+        if (isset($request['tajeer_or_sell'])) {
+            $prods->where('tajeer_or_sell',$request['tajeer_or_sell']);
+        }
         if (isset($request['high_price'])) {
             $prods->OrderBy('price', 'DESC');
         }
@@ -71,7 +90,9 @@ class ProdsController extends ApiController
     {
         $user_id = $request['uid'];
         $country_id = $request['country_id'];
-        $prods = Prod::where('country_id', $country_id)->where('uid', $user_id)->get();
+        $prods = Prod::with('user')
+        ->withCount('comments')
+        ->with('country:id,currency_ar')->where('country_id', $country_id)->where('uid', $user_id)->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -83,7 +104,7 @@ class ProdsController extends ApiController
         $country_id = $request['country_id'];
         $uid = $request['uid'];
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        $prods = Prod::where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('descr', 'LIKE', '%' . $keyword . '%');
+        $prods = Prod::with('user')->withCount('comments')->with('country:id,currency_ar')->where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('descr', 'LIKE', '%' . $keyword . '%');
         if($blocked_user){
             $prods->where('uid', '!=', $blocked_user);
         }

@@ -10,7 +10,10 @@ class FavController extends ApiController
 {
     public function getAllFavByUserid(Request $request)
     {
-        $fav = Fav::where('uid',$request['uid'])->get();
+        $fav = Fav::with('prod')
+        ->with('prod.country:id,currency_ar')
+        ->with('user')
+        ->where('uid',$request['uid'])->get();
         return $this->apiResponse($request, trans('language.message'), $fav, true);
     }
     public function makeFavProd(Request $request){

@@ -33,9 +33,9 @@ class Question extends Model
         return $this->belongsTo(City::class);
     }
     public function user(){
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class,'uid','id');
     }
-    public function blockedUser($query,$to_uid){
-        return $query->where('uid','!=',$to_uid);
+    public function comments(){
+        return $this->hasMany(CommentOnQuestion::class,'quest_id','id');
     }
 }

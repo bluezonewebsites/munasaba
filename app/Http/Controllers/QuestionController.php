@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\ApiController;
+use App\Models\CommentOnProd;
 use App\Models\CommentOnQuestion;
 use App\Models\LikeOnQuest;
 use App\Models\ReplayOnComment;
@@ -18,20 +19,33 @@ class QuestionController extends ApiController
     {
         $uid = $request['uid'];
         //Get Blocked User 
-        $question = Question::where('uid', $uid)->get();
+        $question = Question::where('uid', $uid)->with('user')->withCount('comments')->get();
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
+    public function getAllQuestionByCityid(Request $request)
+    {
+        $city_id = $request['city_id'];
+        //Get Blocked User 
+        $question = Question::where('city_id', $city_id)->withCount('comments')->with('user')->get();
+        return $this->apiResponse($request, trans('language.message'), $question, true);
+    }
+
+    
     public function getAllQuestion(Request $request)
     {
         $uid = $request['uid'];
         $country_id = $request['country_id'];
-        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        $question = Question::where('country_id', $country_id);
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();        
+        $question = Question::with('user')->withCount('comments')->where('country_id', $country_id);
+        
         if($blocked_user){
             $question->where('uid', '!=', $blocked_user);
         }
         $question=$question->get();
-        return $this->apiResponse($request, trans('language.message'), $question, true);
+        // $data=[
+        //      'questions'=>$question,
+        // ];
+         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
     public function searchQuestion(Request $request)
@@ -41,7 +55,7 @@ class QuestionController extends ApiController
         $uid = $request['uid'];
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         
-        $question = Question::where('country_id', $country_id)->where('quest', 'LIKE', '%' . $keyword . '%');
+        $question = Question::with('user')->withCount('comments')->where('country_id', $country_id)->where('quest', 'LIKE', '%' . $keyword . '%');
         if($blocked_user){
             $question->where('uid', '!=', $blocked_user);
         }
@@ -52,6 +66,7 @@ class QuestionController extends ApiController
     {
         $data = $request->all();
         try {
+            DB::beginTransaction();
             $folder = 'image/questions/';
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
@@ -61,7 +76,6 @@ class QuestionController extends ApiController
                 $name = public_path($folder) . '/' . $name;
                 move_uploaded_file($image, $name);
             }
-            DB::beginTransaction();
             $question = Question::create([
                 'uid' => $data['uid'],
                 'quest' => $data['quest'],

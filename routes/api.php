@@ -106,6 +106,8 @@ Route::post('cities_by_country_id',[CitiesController::class,'getAllCitiesByCount
 //---------------------------- Questions Routes ---------------------------
 
 Route::post('question_by_user_id',[QuestionController::class,'getAllQuestionByUserid']);
+Route::post('question_by_city_id',[QuestionController::class,'getAllQuestionByCityid']);
+
 Route::post('questions',[QuestionController::class,'getAllQuestion']);
 Route::post('questions_search',[QuestionController::class,'searchQuestion']);
 Route::post('questions_add',[QuestionController::class,'storeQuestion']);

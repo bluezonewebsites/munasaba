@@ -24,7 +24,9 @@ class Country extends Model
         'name',
         'currency'
     ];
-
+    protected $casts = [
+        'id' => 'string',
+    ];
     public function getNameAttribute()
     {
 
