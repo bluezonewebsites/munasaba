@@ -32,8 +32,6 @@ class ProdsController extends ApiController
     }
 
 
-
-
     public function getAllProdsByCatid(Request $request)
     {
         $cat_id = $request['cat_id'];
@@ -189,25 +187,25 @@ class ProdsController extends ApiController
                 'uid' => $data['uid'],
                 'name' => $data['name'],
                 'price' => $data['price'],
-                'loc' => isset($data['loc']) ? $data['loc'] : null,
+                'loc' => isset($data['loc']) ? $data['loc'] : "",
                 'country_id' => isset($data['country_id']) ? $data['country_id'] : 6,
-                'city_id' => isset($data['city_id']) ? $data['city_id'] : null,
+                'city_id' => isset($data['city_id']) ? $data['city_id'] : "",
                 'region_id' => isset($data['region_id']) ? $data['region_id'] : 6,
-                'lat' => isset($data['lat']) ? $data['lat'] : null,
-                'lng' => isset($data['lng']) ? $data['lng'] : null,
-                'descr' => isset($data['descr']) ? $data['descr'] : null,
+                'lat' => isset($data['lat']) ? $data['lat'] : "",
+                'lng' => isset($data['lng']) ? $data['lng'] : "",
+                'descr' => isset($data['descr']) ? $data['descr'] : "",
                 'phone' => $data['phone'],
-                'wts' => isset($data['wts']) ? $data['wts'] : null,
+                'wts' => isset($data['wts']) ? $data['wts'] : "",
                 'has_chat' => isset($data['has_chat']) ? $data['has_chat'] : 0,
                 'has_wts' => isset($data['has_wts']) ? $data['has_wts'] : 0,
                 'has_phone' => isset($data['has_phone']) ? $data['has_phone'] : 0,
                 'amount' => $data['amount'],
                 'color_name' => $data['color_name'],
                 'tajeer_or_sell' => $data['tajeer_or_sell'],
-                'duration_use' => isset($data['duration_use']) ? $data['duration_use'] : null,
-                'prod_size' => isset($data['prod_size']) ? $data['prod_size'] : null,
-                'sell_cost' => isset($data['sell_cost']) ? $data['sell_cost'] : null,
-                'img' => isset($request['main_image']) ? $image_name : null,
+                'duration_use' => isset($data['duration_use']) ? $data['duration_use'] : "",
+                'prod_size' => isset($data['prod_size']) ? $data['prod_size'] : "",
+                'sell_cost' => isset($data['sell_cost']) ? $data['sell_cost'] : "",
+                'img' => isset($request['main_image']) ? $image_name : "",
 
             ]);
             if (isset($request['sub_image'])) {
