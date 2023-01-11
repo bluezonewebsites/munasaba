@@ -27,7 +27,7 @@ class ProdsController extends ApiController
         if (isset($request['city_id'])) {
             $prods->where('city_id', $request['city_id']);
         }
-        $prods=$prods->get();
+        $prods=$prods->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -45,7 +45,7 @@ class ProdsController extends ApiController
         if (isset($request['sub_cat_id'])) {
             $prods->where('sub_cat_id', $request['sub_cat_id']);
         }
-        $prods=$prods->get();
+        $prods=$prods->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -80,7 +80,7 @@ class ProdsController extends ApiController
         if (isset($request['newest'])) {
             $prods->OrderBy('created_at', 'DESC');
         }
-        $prods=$prods->get();
+        $prods=$prods->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -108,7 +108,7 @@ class ProdsController extends ApiController
         if($blocked_user){
             $prods->where('uid', '!=', $blocked_user);
         }
-        $prods=$prods->get();
+        $prods=$prods->paginate(10);
     
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }

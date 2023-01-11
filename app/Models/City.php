@@ -19,6 +19,9 @@ class City extends Model
     protected $appends=[
         'name'
     ];
+    protected $casts = [
+        'id' => 'string',
+    ];
     public function country(){
         return $this->belongsTo(Country::class,"country_id","id");
     }

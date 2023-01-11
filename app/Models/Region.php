@@ -20,6 +20,9 @@ class Region extends Model
     protected $appends=[
         'name'
     ];
+    protected $casts = [
+        'id' => 'string',
+    ];
     public function city(){
         return $this->belongsTo(City::class,"city_id","id");
     }

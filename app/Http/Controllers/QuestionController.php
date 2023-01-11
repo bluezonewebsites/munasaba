@@ -26,8 +26,12 @@ class QuestionController extends ApiController
     {
         $city_id = $request['city_id'];
         //Get Blocked User 
-        $question = Question::where('city_id', $city_id)->withCount('comments')->with('user')->get();
-        return $this->apiResponse($request, trans('language.message'), $question, true);
+        $question = Question::where('city_id', $city_id)->withCount('comments')->with('user');
+        if (isset($request['uid'])) {
+            $question->where('uid', $request['uid']);
+        }
+        $question=$question->get();
+    return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
     
