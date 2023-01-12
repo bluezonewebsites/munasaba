@@ -41,6 +41,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login',[UsersController::class,'login']);
 Route::post('signup',[UsersController::class,'create']);
 Route::post('rate_user',[UsersController::class,'rateUser']);
+Route::post('profile',[UsersController::class,'profile']);
+
 Route::post('report_user',[UsersController::class,'reportUser']);
 Route::post('users_search',[UsersController::class,'searchUsers']);
 Route::post('user_edit',[UsersController::class,'editProfile']);

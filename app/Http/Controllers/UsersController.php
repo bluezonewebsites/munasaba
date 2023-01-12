@@ -78,6 +78,10 @@ class UsersController extends Controller
         }
     }
 
+    public function profile($id){
+        $user=User::findOrFail($id);
+        return $this->apiResponse(null, trans('language.message'), $user, true);
+    }
 
     public function editProfile(Request $request)
     {
