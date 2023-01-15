@@ -90,7 +90,15 @@ class UsersController extends Controller
         ->with('city')
         ->with('region')
         ->findOrFail($request['id']);
-        return $this->apiResponse($request, trans('language.message'), $user, true);
+        if (isset($request['anther_user_id'])) {
+            $follow = Follower::where('uid', $request['id'])->where('fid', $request['anther_user_id'])->get();
+            ($follow) ? $flag = 1 : 0;
+        }
+        $data=[
+            'user'=>$user,
+            'follow'=>$flag,
+        ];
+        return $this->apiResponse($request, trans('language.message'), $data, true);
     }
 
     public function editProfile(Request $request)
