@@ -17,13 +17,6 @@ class Question extends Model
         'city_id',
         'pic',
     ];
-    protected $appends=[
-        'image',
-    ];
-    public function getImageAttribute()
-    {
-        return asset('/image/' . $this->pic);
-    }
     public function country()
     {
         return $this->belongsTo(Country::class);

@@ -56,10 +56,6 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
-
-    protected $appends=[
-        'image',
-    ];
     public function city(){
         return $this->belongsTo(City::class);
     }
@@ -69,11 +65,6 @@ class User extends Authenticatable
     public function region(){
         return $this->belongsTo(Region::class);
     }
-    public function getImageAttribute()
-    {
-        return asset('image/' . $this->pic);
-    }
-   
     public function user_block_from(){
         return $this->hasMany(UserBlocked::class,'from_uid','id');
     }
