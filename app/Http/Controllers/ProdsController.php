@@ -30,6 +30,16 @@ class ProdsController extends ApiController
         $prods=$prods->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
+    public function getAllProdsById(Request $request)
+    {
+        $prods = Prod::where('id', $request['id'])
+            ->with('prodImage:prod_id,img,mtype')
+            ->with('user')
+            ->withCount('comments')
+            ->with('country:id,currency_ar');
+        $prods=$prods->paginate(10);
+        return $this->apiResponse($request, trans('language.message'), $prods, true);
+    }
 
 
     public function getAllProdsByCatid(Request $request)

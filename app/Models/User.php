@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use PHPUnit\Framework\Constraint\Count;
 
 class User extends Authenticatable
 {
@@ -57,17 +58,44 @@ class User extends Authenticatable
     ];
 
     protected $appends=[
-        'image',
+        'image','cover'
     ];
+    public function city(){
+        return $this->belongsTo(City::class);
+    }
+    public function country(){
+        return $this->belongsTo(Country::class);
+    }
+    public function region(){
+        return $this->belongsTo(Region::class);
+    }
     public function getImageAttribute()
     {
         return asset('image/' . $this->pic);
+    }
+    public function getCoverAttribute()
+    {
+        return asset('image/' . $this->cover);
     }
     public function user_block_from(){
         return $this->hasMany(UserBlocked::class,'from_uid','id');
     }
     public function user_block_to(){
         return $this->hasOne(UserBlocked::class,'to_uid','id');
+    }
+    public function prods(){
+        return $this->hasMany(Prod::class,'uid','id');
+    }
+    public function followers(){
+        return $this->hasMany(Follower::class,'to_user','id');
+
+    }
+    public function following(){
+        return $this->hasMany(Followimg::class,'fid','id');
+        
+    }
+    public function userRate(){
+        return $this->hasMany(UserRate::class,'user_rated_id','id');
     }
 
 }

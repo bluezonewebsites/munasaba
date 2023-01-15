@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follower;
+use App\Models\Followimg;
 use App\Models\User;
 use App\Models\UserBlocked;
 use App\Models\UserRate;
@@ -78,8 +80,16 @@ class UsersController extends Controller
         }
     }
 
-    public function profile(Request $request){
-        $user=User::findOrFail($request['id']);
+    public function profile(Request $request)
+    {
+        $user=User::withCount('prods')
+        ->withCount('following')
+        ->withCount('follwers')
+        ->withCount('userRate')
+        ->with('country')
+        ->with('city')
+        ->with('region')
+        ->findOrFail($request['id']);
         return $this->apiResponse($request, trans('language.message'), $user, true);
     }
 
@@ -139,13 +149,21 @@ class UsersController extends Controller
         $keyword = $request['keyword'];
         $country_id = $request['country_id'];
         $uid = $request['uid'];
+        // $follow=Followimg::where();
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        $users = User::where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('last_name', 'LIKE', '%' . $keyword . '%');
+        $users = User::where('country_id', $country_id)
+        ->where('name', 'LIKE', '%' . $keyword . '%')
+        ->with('city')
+        ->where('last_name', 'LIKE', '%' . $keyword . '%');
         if($blocked_user){
             $users->where('id', '!=', $blocked_user);
         }
         $users=$users->get();
-        return $this->apiResponse($request, trans('language.message'), $users, true);
+        $data=[
+            'user'=>$users,
+            'follow'=>0
+        ];
+        return $this->apiResponse($request, trans('language.message'), $data, true);
     }
     public function login(Request $request)
     {

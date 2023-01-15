@@ -68,6 +68,9 @@ Route::post('following',[FollowimgController::class,'getAllFollowingByUserid']);
 Route::post('prods_search',[ProdsController::class,'searchProds']);
 Route::post('prods_add',[ProdsController::class,'storeProd']);
 Route::post('prods_by_category',[ProdsController::class,'getAllProdsByCatid']);
+Route::post('prods_by_id',[ProdsController::class,'getAllProdsById']);
+
+
 Route::post('prods',[ProdsController::class,'getAllProdsByCountry']);
 Route::post('prods_by_filter',[ProdsController::class,'getAllProdsByFilter']);
 Route::post('prods_by_user',[ProdsController::class,'getAllProdsByUserid']);
