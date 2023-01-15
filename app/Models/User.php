@@ -58,7 +58,7 @@ class User extends Authenticatable
     ];
 
     protected $appends=[
-        'image','cover'
+        'image','cover',
     ];
     public function city(){
         return $this->belongsTo(City::class);
@@ -73,10 +73,10 @@ class User extends Authenticatable
     {
         return asset('image/' . $this->pic);
     }
-    public function getCoverAttribute()
-    {
-        return asset('image/' . $this->cover);
-    }
+    // public function getCoverAttribute()
+    // {
+    //     return asset('image/' . $this->cover);
+    // }
     public function user_block_from(){
         return $this->hasMany(UserBlocked::class,'from_uid','id');
     }
