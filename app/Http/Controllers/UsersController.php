@@ -84,7 +84,7 @@ class UsersController extends Controller
     {
         $user=User::withCount('prods')
         ->withCount('following')
-        ->withCount('follwers')
+        ->withCount('followers')
         ->withCount('userRate')
         ->with('country')
         ->with('city')
