@@ -90,6 +90,7 @@ class UsersController extends Controller
         ->with('city')
         ->with('region')
         ->findOrFail($request['id']);
+        $flag=0;
         if (isset($request['anther_user_id'])) {
             $follow = Follower::where('uid', $request['id'])->where('fid', $request['anther_user_id'])->get();
             ($follow) ? $flag = 1 : 0;
