@@ -93,7 +93,7 @@ class UsersController extends Controller
         // $flag=0;
         if (isset($request['anther_user_id'])) {
             $follow = Follower::where('uid', $request['id'])->where('fid', $request['anther_user_id'])->get();
-            ($follow) ? $follow = 1 : 0;
+            $follow=($follow) ? $follow = 1 : 0;
         }
         $data=[
             'user'=>$user,
