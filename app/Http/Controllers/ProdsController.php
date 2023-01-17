@@ -112,7 +112,7 @@ class ProdsController extends ApiController
         $country_id = $request['country_id'];
         $uid = $request['uid'];
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        $prods = Prod::with('user')->withCount('comments')->with('country:id,currency_ar')->where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->where('descr', 'LIKE', '%' . $keyword . '%');
+        $prods = Prod::with('user')->withCount('comments')->with('country:id,currency_ar')->where('country_id', $country_id)->where('name', 'LIKE', '%' . $keyword . '%')->orWhere('descr', 'LIKE', '%' . $keyword . '%');
         if($blocked_user){
             $prods->where('uid', '!=', $blocked_user);
         }
