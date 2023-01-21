@@ -33,7 +33,7 @@ class CategoriesController extends  ApiController
     {
         $cat_id=$request['cat_id'];
         $sub_categories =DB::table('cats')
-        ->where('cats.cat_id',$cat_id)
+        ->where('cats.id',$cat_id)
         ->select('cats.*') 
         ->get();
         return $this->apiResponse($request, trans('language.message'), $sub_categories, true);
