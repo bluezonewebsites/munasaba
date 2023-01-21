@@ -87,6 +87,7 @@ Route::post('replay_on_comment',[ProdsController::class,'makeReplayOnComment']);
 Route::post('categories',[CategoriesController::class,'getAllCategories']);
 Route::post('category',[CategoriesController::class,'getCategoriesById']);
 Route::post('sub_category',[CategoriesController::class,'getAllSubCategories']);
+Route::post('sub_category_by_id',[CategoriesController::class,'getAllSubCategoriesbyId']);
 
 
 //---------------------------- Regions Routes ---------------------------

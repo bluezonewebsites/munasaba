@@ -5,16 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Follower;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
+use Illuminate\Support\Facades\DB;
 
 class FollowerController extends ApiController
 {
 
     public function getAllFollowerByUserid(Request $request)
     {
-        $follower = Follower::with('from_user')
-        ->where('uid',$request['uid'])
-        ->with('to_user')
-        ->get();
+        $follower = DB::table('followers')
+        ->where('followers.uid',$request['uid'])
+        ->leftjoin('user as user_to','user_to.id','followers.uid')
+        ->leftjoin('user as user_from','user_from.id','followers.fid')
+        ->select('followers.*','user_from.name as user_from_name'
+        ,'user_to.name as user_to_name')
+        ->get();        
         return $this->apiResponse($request, trans('language.message'), $follower, true);
     }
     /**

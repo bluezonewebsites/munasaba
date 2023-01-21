@@ -4,13 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Country;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CountryController extends ApiController
 {
 
     public function getAllCountries(Request $request)
     {
-        $countries = Country::Active()->get();
+        $countries = DB::table('countries')->get();
         return $this->apiResponse($request, trans('language.message'), $countries, true);
     }
     public function index()

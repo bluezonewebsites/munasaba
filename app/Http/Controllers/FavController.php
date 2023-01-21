@@ -5,15 +5,30 @@ namespace App\Http\Controllers;
 use App\Models\Fav;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
+use Illuminate\Support\Facades\DB;
 
 class FavController extends ApiController
 {
     public function getAllFavByUserid(Request $request)
     {
-        $fav = Fav::with('prod')
-        ->with('prod.country:id,currency_ar')
-        ->with('user')
-        ->where('uid',$request['uid'])->get();
+        $fav = DB::table('fav')
+        ->leftjoin('prods as p','p.id','fav.prod_id')
+        ->leftjoin('countries','countries.id','p.country_id')
+        ->leftjoin('user','user.id','fav.uid')
+        ->where('fav.uid',$request['uid'])
+        ->select('fav.*'
+        ,'p.price as prod_price'
+        ,'p.img as prod_image'
+        ,'p.name as prod_name'
+        ,'p.loc as prod_location'
+        ,'user.name as name'
+        ,'user.last_name as last_name'
+        ,'user.verified as user_verified'
+        ,'countries.name_ar as countries_name_ar'
+        ,'countries.name_ar as countries_name_ar'
+        ,'countries.currency_ar as currency_ar'
+        )
+        ->paginate(10);        
         return $this->apiResponse($request, trans('language.message'), $fav, true);
     }
     public function makeFavProd(Request $request)

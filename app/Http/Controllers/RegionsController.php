@@ -5,19 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Region;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
+use Illuminate\Support\Facades\DB;
 
 class RegionsController extends ApiController
 {
 
     public function getAllRegions(Request $request){
-        $regions=Region::with('city:id,name_ar,name_en')->get();
+        $regions=DB::table('regions')
+        ->leftjoin('cities','cities.id','regions.city_id')
+        ->select('regions.*','cities.name_ar as city_name_ar')
+        ->get(); 
         return $this->apiResponse($request, trans('language.message'), $regions, true);
 
     }
 
     public function getAllRegionsByCityId(Request $request){
         $city_id=$request['city_id'];
-        $region=Region::where('city_id',$city_id)->with('city:id,name_ar,name_en')->get();
+        $region=DB::table('regions')
+        ->where('regions.city_id',$city_id)
+        ->leftjoin('cities','cities.id','regions.city_id')
+        ->select('regions.*','cities.name_ar as city_name_ar')
+        ->get(); 
         return $this->apiResponse($request, trans('language.message'), $region, true);
     }
     /**

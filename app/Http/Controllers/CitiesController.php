@@ -4,20 +4,28 @@ namespace App\Http\Controllers;
 
 use App\Models\City;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CitiesController extends ApiController
 {
 
     public function getAllCities(Request $request)
     {
-        $cities = City::select('id','country_id','name_ar','name_en')->with('country:id,name_ar,name_en')->get();
+        $cities=DB::table('cities')
+        ->leftjoin('countries','countries.id','cities.country_id')
+        ->select('cities.*'
+        ,'countries.name_ar as countries_name_ar')->get();        
         return $this->apiResponse($request, trans('language.message'), $cities, true);
     }
 
     public function getAllCitiesByCountrId(Request $request)
     {
         $country_id = $request['country_id'];
-        $cities = City::where('country_id', $country_id)->with('country:id,name_ar,name_en')->get();
+        $cities =DB::table('cities')
+        ->where('cities.country_id', $country_id)
+        ->leftjoin('countries','countries.id','cities.country_id')
+        ->select('cities.*','countries.name_ar as countries_name_ar')
+        ->get(); 
         return $this->apiResponse($request, trans('language.message'), $cities, true);
     }
 
@@ -28,8 +36,9 @@ class CitiesController extends ApiController
      */
     public function index()
     {
-        $cities = City::with('country:id,name_ar,name_en')->get();
-        return view('cities', compact('cities'));
+        $data['city'] =DB::table('city')
+        ->leftjoin('country','country.id','city.country_id')->get();
+        return view('cities', $data);
     }
 
     /**

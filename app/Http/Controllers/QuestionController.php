@@ -18,19 +18,36 @@ class QuestionController extends ApiController
     public function getAllQuestionByUserid(Request $request)
     {
         $uid = $request['uid'];
-        //Get Blocked User 
-        $question = Question::where('uid', $uid)->with('user')->withCount('comments')->get();
+        $question = DB::table('questions')
+        ->leftjoin('user','user.id','questions.uid')
+        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
+        ->where('questions.uid',$uid)
+        ->select('questions.*'
+        ,'user.name as name'
+        ,'user.last_name as last_name'
+        ,'user.verified as user_verified',
+        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+        )
+        ->paginate(10);     
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
     public function getAllQuestionByCityid(Request $request)
     {
         $city_id = $request['city_id'];
-        //Get Blocked User 
-        $question = Question::where('city_id', $city_id)->withCount('comments')->with('user');
+        $question = DB::table('questions')
+        ->leftjoin('user','user.id','questions.uid')
+        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
+        ->where('questions.city_id', $city_id)
+        ->select('questions.*'
+        ,'user.name as name'
+        ,'user.last_name as last_name'
+        ,'user.verified as user_verified',
+        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+    );
         if (isset($request['uid'])) {
-            $question->where('uid', $request['uid']);
+            $question->where('questions.uid', $request['uid']);
         }
-        $question=$question->get();
+        $question=$question->paginate(10); 
     return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
@@ -39,16 +56,21 @@ class QuestionController extends ApiController
     {
         $uid = $request['uid'];
         $country_id = $request['country_id'];
+        $question = DB::table('questions')
+        ->leftjoin('user','user.id','questions.uid')
+        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
+        ->where('country_id', $country_id)
+        ->select('questions.*'
+        ,'user.name as name'
+        ,'user.last_name as last_name'
+        ,'user.verified as user_verified',
+        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+    );
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();        
-        $question = Question::with('user')->withCount('comments')->where('country_id', $country_id);
-        
         if($blocked_user){
-            $question->where('uid', '!=', $blocked_user);
+            $question->where('questions.uid', '!=', $blocked_user);
         }
         $question=$question->get();
-        // $data=[
-        //      'questions'=>$question,
-        // ];
          return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
@@ -57,13 +79,22 @@ class QuestionController extends ApiController
         $keyword = $request['keyword'];
         $country_id = $request['country_id'];
         $uid = $request['uid'];
+        $question = DB::table('questions')
+        ->leftjoin('user','user.id','questions.uid')
+        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
+        ->where('quest', 'LIKE', '%' . $keyword . '%')
+        ->where('country_id', $country_id)
+        ->select('questions.*'
+        ,'user.name as name'
+        ,'user.last_name as last_name'
+        ,'user.verified as user_verified',
+        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+    );
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        
-        $question = Question::with('user')->withCount('comments')->where('country_id', $country_id)->where('quest', 'LIKE', '%' . $keyword . '%');
         if($blocked_user){
-            $question->where('uid', '!=', $blocked_user);
+            $question->where('questions.uid', '!=', $blocked_user);
         }
-        $question=$question->get();
+        $question=$question->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
     public function storeQuestion(Request $request)

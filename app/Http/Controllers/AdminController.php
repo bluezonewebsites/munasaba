@@ -6,11 +6,14 @@ use App\Models\Admin;
 use App\Models\AppHelp;
 use App\Models\ContactUs;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
     public function about(){
-        $about=AppHelp::all();
+        $about=DB::table('help')
+        ->select('help.*')
+        ->get();
         return $this->apiResponse(null, trans('language.created'), $about, true);
     }
     public function contactUs(Request $request){

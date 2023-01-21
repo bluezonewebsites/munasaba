@@ -5,15 +5,20 @@ namespace App\Http\Controllers;
 use App\Models\Followimg;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
+use Illuminate\Support\Facades\DB;
 
 class FollowimgController extends ApiController
 {
     public function getAllFollowingByUserid(Request $request)
     {
-        $followimg = Followimg::with('from_user')
-        ->where('uid',$request['uid'])
-        ->with('to_user')
-        ->get();
+        $followimg = DB::table('followings')
+        ->where('followings.uid',$request['uid'])
+        ->leftjoin('user as user_to','user_to.id','followings.uid')
+        ->leftjoin('user as user_from','user_from.id','followings.fid')
+        ->select('followings.*','user_from.name as user_from_name'
+        ,'user_to.name as user_to_name')
+        ->get();        
+       
         return $this->apiResponse($request, trans('language.message'), $followimg, true);
     }
     /**

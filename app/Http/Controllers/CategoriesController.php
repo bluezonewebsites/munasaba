@@ -7,25 +7,44 @@ use App\Http\Controllers\ApiController;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoriesController extends  ApiController
 {
 
     public function getAllCategories(Request $request)
     {
-        $categories = Category::Active()->where('cat_id',0)->get();
+        $categories = DB::table('cats')
+        ->where('cats.cat_id',0)
+        ->select('cats.*')
+        ->paginate(10);
+        $categories->ask= 1;
         return $this->apiResponse($request, trans('language.message'), $categories, true);
     }
     public function getAllSubCategories(Request $request)
     {
+        $sub_categories =DB::table('cats')
+        ->where('cats.cat_id',1)
+        ->select('cats.*') 
+        ->get();
+        return $this->apiResponse($request, trans('language.message'), $sub_categories, true);
+    }
+    public function getAllSubCategoriesbyId(Request $request)
+    {
         $cat_id=$request['cat_id'];
-        $sub_categories = Category::Active()->where('cat_id',$cat_id)->get();
+        $sub_categories =DB::table('cats')
+        ->where('cats.cat_id',$cat_id)
+        ->select('cats.*') 
+        ->get();
         return $this->apiResponse($request, trans('language.message'), $sub_categories, true);
     }
     public function getCategoriesById(Request $request)
     {
         $cat_id=$request['cat_id'];
-        $category = Category::Active()->find($cat_id);
+        $category = DB::table('cats')
+        ->where('cat_id',$cat_id)
+        ->select('cats.*') 
+        ->find($cat_id);
         if (!$category) {
             return $this->apiResponse($request, trans('language.message_error'), null, false,500);
         }
