@@ -14,7 +14,8 @@ class CitiesController extends ApiController
         $cities=DB::table('cities')
         ->leftjoin('countries','countries.id','cities.country_id')
         ->select('cities.*'
-        ,'countries.name_ar as countries_name_ar')->get();        
+        ,'countries.name_ar as countries_name_ar' 
+        ,'countries.name_en as countries_name_en')->get();        
         return $this->apiResponse($request, trans('language.message'), $cities, true);
     }
 

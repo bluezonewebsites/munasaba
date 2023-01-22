@@ -83,7 +83,7 @@ class QuestionController extends ApiController
         ->leftjoin('user','user.id','questions.uid')
         ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
         ->where('quest', 'LIKE', '%' . $keyword . '%')
-        ->where('country_id', $country_id)
+        ->where('quest.country_id', $country_id)
         ->select('questions.*'
         ,'user.name as name'
         ,'user.last_name as last_name'

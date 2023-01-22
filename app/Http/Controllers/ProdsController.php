@@ -39,9 +39,13 @@ class ProdsController extends ApiController
                 'user.last_name as user_last_name',
                 'user.verified as user_verified',
                 'countries.name_ar as countries_name_ar',
+                'countries.name_en as countries_name_en',
                 'countries.currency_ar as countries_currency_ar',
+                'countries.currency_en as countries_currency_en',
                 'cities.name_ar as cities_name_ar',
+                'cities.name_en as cities_name_en',
                 'regions.name_ar as regions_name_ar',
+                'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
             )->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
@@ -68,9 +72,13 @@ class ProdsController extends ApiController
                 'user.last_name as user_last_name',
                 'user.verified as user_verified',
                 'countries.name_ar as countries_name_ar',
+                'countries.name_en as countries_name_en',
                 'countries.currency_ar as countries_currency_ar',
+                'countries.currency_en as countries_currency_en',
                 'cities.name_ar as cities_name_ar',
+                'cities.name_en as cities_name_en',
                 'regions.name_ar as regions_name_ar',
+                'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
             )->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
@@ -102,9 +110,13 @@ class ProdsController extends ApiController
                 'user.last_name as user_last_name',
                 'user.verified as user_verified',
                 'countries.name_ar as countries_name_ar',
+                'countries.name_en as countries_name_en',
                 'countries.currency_ar as countries_currency_ar',
+                'countries.currency_en as countries_currency_en',
                 'cities.name_ar as cities_name_ar',
+                'cities.name_en as cities_name_en',
                 'regions.name_ar as regions_name_ar',
+                'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
             );
 
@@ -161,9 +173,13 @@ class ProdsController extends ApiController
                 'user.last_name as user_last_name',
                 'user.verified as user_verified',
                 'countries.name_ar as countries_name_ar',
+                'countries.name_en as countries_name_en',
                 'countries.currency_ar as countries_currency_ar',
+                'countries.currency_en as countries_currency_en',
                 'cities.name_ar as cities_name_ar',
+                'cities.name_en as cities_name_en',
                 'regions.name_ar as regions_name_ar',
+                'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
             )->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
@@ -196,9 +212,13 @@ class ProdsController extends ApiController
             'user.last_name as user_last_name',
             'user.verified as user_verified',
             'countries.name_ar as countries_name_ar',
+            'countries.name_en as countries_name_en',
             'countries.currency_ar as countries_currency_ar',
+            'countries.currency_en as countries_currency_en',
             'cities.name_ar as cities_name_ar',
+            'cities.name_en as cities_name_en',
             'regions.name_ar as regions_name_ar',
+            'regions.name_en as regions_name_en',
             DB::raw('COUNT(prods_rates.prod_id) as comments')
         )->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
@@ -231,9 +251,13 @@ class ProdsController extends ApiController
             'user.last_name as user_last_name',
             'user.verified as user_verified',
             'countries.name_ar as countries_name_ar',
+            'countries.name_en as countries_name_en',
             'countries.currency_ar as countries_currency_ar',
+            'countries.currency_en as countries_currency_en',
             'cities.name_ar as cities_name_ar',
+            'cities.name_en as cities_name_en',
             'regions.name_ar as regions_name_ar',
+            'regions.name_en as regions_name_en',
             DB::raw('COUNT(prods_rates.prod_id) as comments')
         );
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Fav;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
+use App\Models\FollowRing;
 use Illuminate\Support\Facades\DB;
 
 class FavController extends ApiController
@@ -21,6 +22,7 @@ class FavController extends ApiController
         ,'p.img as prod_image'
         ,'p.name as prod_name'
         ,'p.loc as prod_location'
+        ,'p.tajeer_or_sell as prod_tajeer_or_sell'
         ,'user.name as name'
         ,'user.last_name as last_name'
         ,'user.verified as user_verified'
@@ -44,5 +46,21 @@ class FavController extends ApiController
             ]);
             return $this->apiResponse($request, trans('language.created'), $fav_prod, true);
         }
+    }
+
+
+    public function activeNotifi(Request $request)
+    {
+        $user= FollowRing::where('uid',$request['uid'])->where('fid',$request['anther_user_id']);
+        if($user){
+            $user->delete();
+        }else{
+            FollowRing::create([
+                'uid' => $request['uid'],
+                'fid' => $request['anther_user_id'],
+            ]);
+        }
+        return $this->apiResponse($request, trans('language.created'), $user, true);
+
     }
 }
