@@ -51,7 +51,7 @@ class FavController extends ApiController
 
     public function activeNotifi(Request $request)
     {
-        $user= FollowRing::where('uid',$request['uid'])->where('fid',$request['anther_user_id']);
+        $user= FollowRing::where('uid',$request['uid'])->where('fid',$request['anther_user_id'])->first();
         if($user){
             $user->delete();
             return $this->apiResponse($request, trans('language.deleted'), null, true);
