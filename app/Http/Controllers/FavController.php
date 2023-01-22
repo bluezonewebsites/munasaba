@@ -54,6 +54,8 @@ class FavController extends ApiController
         $user= FollowRing::where('uid',$request['uid'])->where('fid',$request['anther_user_id']);
         if($user){
             $user->delete();
+            return $this->apiResponse($request, trans('language.deleted'), null, true);
+
         }else{
             FollowRing::create([
                 'uid' => $request['uid'],
