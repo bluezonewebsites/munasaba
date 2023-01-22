@@ -21,79 +21,20 @@ class FollowerController extends ApiController
         ->get();        
         return $this->apiResponse($request, trans('language.message'), $follower, true);
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function makeFollow(Request $request)
     {
-        //
-    }
+        $user= Follower::where('uid',$request['uid'])->where('fid',$request['anther_user_id'])->first();
+        if($user){
+            $user->delete();
+            return $this->apiResponse($request, trans('language.deleted'), null, true);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        }else{
+            Follower::create([
+                'uid' => $request['uid'],
+                'fid' => $request['anther_user_id'],
+            ]);
+        }
+        return $this->apiResponse($request, trans('language.created'), $user, true);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Follower  $follower
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Follower $follower)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Follower  $follower
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Follower $follower)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Follower  $follower
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Follower $follower)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Follower  $follower
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Follower $follower)
-    {
-        //
     }
 }

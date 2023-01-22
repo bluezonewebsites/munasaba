@@ -63,7 +63,10 @@ Route::post('notification',[FavController::class,'activeNotifi']);
 
 
 Route::post('followers',[FollowerController::class,'getAllFollowerByUserid']);
+Route::post('make_follow',[FollowerController::class,'makeFollow']);
+
 Route::post('following',[FollowimgController::class,'getAllFollowingByUserid']);
+Route::post('make_following',[FollowimgController::class,'makeFollowing']);
 
 
 

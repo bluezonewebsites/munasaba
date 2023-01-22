@@ -21,79 +21,20 @@ class FollowimgController extends ApiController
        
         return $this->apiResponse($request, trans('language.message'), $followimg, true);
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function makeFollowing(Request $request)
     {
-        //
-    }
+        $user= Followimg::where('uid',$request['uid'])->where('fid',$request['anther_user_id'])->first();
+        if($user){
+            $user->delete();
+            return $this->apiResponse($request, trans('language.deleted'), null, true);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        }else{
+            Followimg::create([
+                'uid' => $request['uid'],
+                'fid' => $request['anther_user_id'],
+            ]);
+        }
+        return $this->apiResponse($request, trans('language.created'), $user, true);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Followimg  $followimg
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Followimg $followimg)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Followimg  $followimg
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Followimg $followimg)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Followimg  $followimg
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Followimg $followimg)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Followimg  $followimg
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Followimg $followimg)
-    {
-        //
     }
 }
