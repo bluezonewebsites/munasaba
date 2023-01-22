@@ -59,7 +59,7 @@ class QuestionController extends ApiController
         $question = DB::table('questions')
         ->leftjoin('user','user.id','questions.uid')
         ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
-        ->where('country_id', $country_id)
+        ->where('questions.country_id', $country_id)
         ->select('questions.*'
         ,'user.name as name'
         ,'user.last_name as last_name'
@@ -82,8 +82,8 @@ class QuestionController extends ApiController
         $question = DB::table('questions')
         ->leftjoin('user','user.id','questions.uid')
         ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
-        ->where('quest', 'LIKE', '%' . $keyword . '%')
-        ->where('quest.country_id', $country_id)
+        ->where('questions', 'LIKE', '%' . $keyword . '%')
+        ->where('questions.country_id', $country_id)
         ->select('questions.*'
         ,'user.name as name'
         ,'user.last_name as last_name'
