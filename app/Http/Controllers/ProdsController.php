@@ -133,28 +133,7 @@ class ProdsController extends ApiController
     {
         $country_id = $request['country_id'];
         $prods = DB::table('prods')
-            ->where('prods.country_id', $country_id);
-        if (isset($request['city_id'])) {
-            $prods->where('prods.city_id', $request['city_id']);
-        }
-        if (isset($request['cat_id'])) {
-            $prods->where('prods.cat_id', $request['cat_id']);
-        }
-        if (isset($request['sub_cat_id'])) {
-            $prods->where('prods.sub_cat_id', $request['sub_cat_id']);
-        }
-        if (isset($request['tajeer_or_sell'])) {
-            $prods->where('prods.tajeer_or_sell', $request['tajeer_or_sell']);
-        }
-        if (isset($request['high_price'])) {
-            $prods->OrderBy('prods.price', 'DESC');
-        }
-        if (isset($request['low_price'])) {
-            $prods->OrderBy('prods.price', 'ASC');
-        }
-        if (isset($request['newest'])) {
-            $prods->OrderBy('prods.created_at', 'DESC');
-        }
+        ->where('prods.country_id', $country_id);
         $prods->leftjoin('countries', 'countries.id', 'prods.country_id')
             ->leftjoin('regions', 'regions.id', 'prods.region_id')
             ->leftjoin('cities', 'cities.id', 'prods.city_id')
@@ -181,7 +160,29 @@ class ProdsController extends ApiController
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
-            )->paginate(10);
+            );
+            if (isset($request['city_id'])) {
+                $prods->where('prods.city_id', $request['city_id']);
+            }
+            if (isset($request['cat_id'])) {
+                $prods->where('prods.cat_id', $request['cat_id']);
+            }
+            if (isset($request['sub_cat_id'])) {
+                $prods->where('prods.sub_cat_id', $request['sub_cat_id']);
+            }
+            if (isset($request['tajeer_or_sell'])) {
+                $prods->where('prods.tajeer_or_sell', $request['tajeer_or_sell']);
+            }
+            if (isset($request['high_price'])) {
+                $prods->OrderBy('prods.price', 'DESC');
+            }
+            if (isset($request['low_price'])) {
+                $prods->OrderBy('prods.price', 'ASC');
+            }
+            if (isset($request['newest'])) {
+                $prods->OrderBy('prods.created_at', 'DESC');
+            }
+            $prods=$prods->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 

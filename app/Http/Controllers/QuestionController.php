@@ -24,6 +24,7 @@ class QuestionController extends ApiController
         ->where('questions.uid',$uid)
         ->select('questions.*'
         ,'user.name as name'
+        ,'user.pic as user_pic'
         ,'user.last_name as last_name'
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
@@ -40,6 +41,7 @@ class QuestionController extends ApiController
         ->where('questions.city_id', $city_id)
         ->select('questions.*'
         ,'user.name as name'
+        ,'user.pic as user_pic'
         ,'user.last_name as last_name'
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
@@ -62,6 +64,7 @@ class QuestionController extends ApiController
         ->where('questions.country_id', $country_id)
         ->select('questions.*'
         ,'user.name as name'
+        ,'user.pic as user_pic'
         ,'user.last_name as last_name'
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
@@ -86,7 +89,9 @@ class QuestionController extends ApiController
         ->where('questions.country_id', $country_id)
         ->select('questions.*'
         ,'user.name as name'
+        ,'user.pic as user_pic'
         ,'user.last_name as last_name'
+    
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
     );
