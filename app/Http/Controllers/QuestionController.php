@@ -28,7 +28,7 @@ class QuestionController extends ApiController
         ,'user.last_name as last_name'
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
-        )
+        )->groupBy('questions.id')
         ->paginate(10);     
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
@@ -45,7 +45,7 @@ class QuestionController extends ApiController
         ,'user.last_name as last_name'
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
-    );
+    )->groupBy('questions.id');
         if (isset($request['uid'])) {
             $question->where('questions.uid', $request['uid']);
         }
@@ -84,21 +84,20 @@ class QuestionController extends ApiController
         $uid = $request['uid'];
         $question = DB::table('questions')
         ->leftjoin('user','user.id','questions.uid')
-        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
-        ->where('questions.quest', 'LIKE', '%' . $keyword . '%')
+        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id');
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        if ($blocked_user) {
+            $question=$question->where('prods.uid', '!=', $blocked_user->to_uid);
+        }
+        $question=$question->where('questions.quest', 'LIKE', '%' . $keyword . '%')
         ->where('questions.country_id', $country_id)
         ->select('questions.*'
         ,'user.name as name'
         ,'user.pic as user_pic'
         ,'user.last_name as last_name'
-    
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
-    );
-        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        if($blocked_user){
-            $question->where('questions.uid', '!=', $blocked_user);
-        }
+    )->groupBy('questions.id');
         $question=$question->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
