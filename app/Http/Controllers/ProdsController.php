@@ -319,6 +319,27 @@ class ProdsController extends ApiController
         ]);
         return $this->apiResponse($request, trans('language.created'), $replay_on_comment, true);
     }
+
+    public function getCommentsReplayProd(Request $request){
+        $uid = $request['uid'];
+        $comment= DB::table('likes_on_rates')
+        ->leftjoin('user','user.id','likes_on_rates.uid')
+        ->leftjoin('prods_rates','prods_rates.id','likes_on_rates.comment_id');        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        if ($blocked_user) {
+            $comment=$comment->where('like_on_replay.uid', '!=', $blocked_user->to_uid);
+        }
+        $comment=$comment->select('likes_on_rates.*'
+        ,'user.name as user_name'
+        ,'user.pic as user_pic'
+        ,'user.last_name as user_last_name'
+        ,'user.verified as user_verified'
+        ,'prods_rates.comment as replay_comment',
+    )->groupBy('likes_on_rates.id');
+        $comment=$comment->paginate(10);
+        return $this->apiResponse($request, trans('language.message'), $comment, true);
+    
+    }
+
     public function makeLikeOnCommentOrReplayOnProd(Request $request)
     {
         //type == 1 -> like on comment 

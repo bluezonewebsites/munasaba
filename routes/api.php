@@ -86,6 +86,7 @@ Route::post('comment_on_prods',[ProdsController::class,'makeCommentOnProd']);
 Route::post('report_on_prods',[ProdsController::class,'makeReportOnProd']);
 Route::post('like_prods',[ProdsController::class,'makeLikeOnCommentOrReplayOnProd']);
 Route::post('replay_on_comment',[ProdsController::class,'makeReplayOnComment']);
+Route::post('prods_comments_replay',[ProdsController::class,'getCommentsReplayProd']);
 
 
 // Contract Cancel already don in service contract controller ->method destroy()
@@ -133,5 +134,6 @@ Route::post('comment_on_questions',[QuestionController::class,'makeCommentOnQues
 Route::post('like_on_questions',[QuestionController::class,'makeLikeOnCommentOrReplayOnQuestion']);
 Route::post('question_edit',[QuestionController::class,'editQuestion']);
 Route::post('question_comments',[QuestionController::class,'getQuestionsComments']);
+Route::post('question_comments_replay',[QuestionController::class,'getCommentsReplayQuest']);
 
 

@@ -189,6 +189,26 @@ class QuestionController extends ApiController
     
     }
 
+    public function getCommentsReplayQuest(Request $request){
+        $uid = $request['uid'];
+        $comment= DB::table('like_on_replay')
+        ->leftjoin('user','user.id','like_on_replay.uid')
+        ->leftjoin('comment_on_questions','comment_on_questions.id','like_on_replay.comment_id');        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        if ($blocked_user) {
+            $comment=$comment->where('like_on_replay.uid', '!=', $blocked_user->to_uid);
+        }
+        $comment=$comment->select('like_on_replay.*'
+        ,'user.name as user_name'
+        ,'user.pic as user_pic'
+        ,'user.last_name as user_last_name'
+        ,'user.verified as user_verified'
+        ,'comment_on_questions.comment as replay_comment',
+    )->groupBy('like_on_replay.id');
+        $comment=$comment->paginate(10);
+        return $this->apiResponse($request, trans('language.message'), $comment, true);
+    
+    }
+
     public function editQuestion(Request $request)
     {
         $question = Question::findOrFail($request['id']);
