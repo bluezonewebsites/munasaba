@@ -506,8 +506,8 @@ class ProdsController extends ApiController
     public function deleteProds(Request $request)
     {
         $prod = Prod::findOrfail($request['id']);
-        $prod=$prod->prodImage()->delete();
-        $prod=$prod->delete();
+        $prod_image=ProdImage::where('prod_id',$prod->id)->delete();
+        $prod->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
     }
 }

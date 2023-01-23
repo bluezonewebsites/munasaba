@@ -236,7 +236,8 @@ class QuestionController extends ApiController
 
     public function deleteQuestion(Request $request)
     {
-        Question::findOrFail($request['id'])->delete();
+        $question=Question::findOrFail($request['id']);
+        $question->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
     }
     /**
