@@ -276,7 +276,8 @@ class UsersController extends Controller
         $rate_user = DB::table('user_rates')
         ->leftjoin('user as rated_user', 'rated_user.id', 'user_rates.user_rated_id')
         ->leftjoin('user as from_user', 'from_user.id', 'user_rates.uid')
-    ->select(
+        ->where('user_rates.uid',$request['uid'])
+        ->select(
         'user_rates.*',
         'rated_user.name as rated_user_name',
         'rated_user.pic as rated_user_pic',
