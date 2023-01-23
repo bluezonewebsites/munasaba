@@ -70,7 +70,7 @@ class ProdsController extends ApiController
                 'main_cat.name_ar as main_cat_name',
                 'sub_cat.name_ar as sub_cat_name',
                 'user.name as name',
-                'user.user_name as user_name',
+                'user.username as user_name',
                 'user.last_name as user_last_name',
                 'user.verified as user_verified',
                 'user.pic as user_pic',
