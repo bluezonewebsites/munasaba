@@ -164,7 +164,29 @@ class QuestionController extends ApiController
             'like_type' => isset($request['like_type']) ? $request['like_type'] : 1,
         ]);
     }
+
         return $this->apiResponse($request, trans('language.created'), $like_on_quest, true);
+    }
+
+    public function getQuestionsComments(Request $request){
+        $uid = $request['uid'];
+        $comment= DB::table('comment_on_questions')
+        ->leftjoin('user','user.id','comment_on_questions.uid')
+        ->leftjoin('questions','questions.id','comment_on_questions.quest_id');
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        if ($blocked_user) {
+            $comment=$comment->where('comment_on_questions.uid', '!=', $blocked_user->to_uid);
+        }
+        $comment=$comment->select('comment_on_questions.*'
+        ,'user.name as name'
+        ,'user.pic as user_pic'
+        ,'user.last_name as last_name'
+        ,'user.verified as user_verified'
+        ,'questions.quest as question_name',
+    )->groupBy('comment_on_questions.id');
+        $comment=$comment->paginate(10);
+        return $this->apiResponse($request, trans('language.message'), $comment, true);
+    
     }
 
     public function editQuestion(Request $request)

@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login',[UsersController::class,'login']);
 Route::post('signup',[UsersController::class,'create']);
 Route::post('rate_user',[UsersController::class,'rateUser']);
+Route::post('get_rate_user',[UsersController::class,'getRateUser']);
 Route::post('profile',[UsersController::class,'profile']);
 
 Route::post('report_user',[UsersController::class,'reportUser']);
@@ -131,5 +132,6 @@ Route::post('questions_delete',[QuestionController::class,'deleteQuestion']);
 Route::post('comment_on_questions',[QuestionController::class,'makeCommentOnQuestion']);
 Route::post('like_on_questions',[QuestionController::class,'makeLikeOnCommentOrReplayOnQuestion']);
 Route::post('question_edit',[QuestionController::class,'editQuestion']);
+Route::post('question_comments',[QuestionController::class,'getQuestionsComments']);
 
 

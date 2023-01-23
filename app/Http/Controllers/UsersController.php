@@ -271,6 +271,24 @@ class UsersController extends Controller
         return $this->apiResponse($request, trans('language.created'), $rate_user, true);
     }
 
+    public function getRateUser(Request $request)
+    {
+        $rate_user = DB::table('user_rates')
+        ->leftjoin('user as rated_user', 'rated_user.id', 'user_rates.user_rated_id')
+        ->leftjoin('user as from_user', 'from_user.id', 'user_rates.uid')
+    ->select(
+        'user_rates.*',
+        'rated_user.name as rated_user_name',
+        'rated_user.pic as rated_user_pic',
+        'from_user.name as from_user_name',
+        'from_user.pic as from_user_pic'
+    )->paginate(10);
+    // $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+    // if ($blocked_user) {
+    //     $users = $users->where('user.uid', '!=', $blocked_user->to_uid);
+    // };
+        return $this->apiResponse($request, trans('language.created'), $rate_user, true);
+    }
     public function reportUser(Request $request)
     {
         $report_user = UserReport::create([
