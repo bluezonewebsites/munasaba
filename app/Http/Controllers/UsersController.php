@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Follower;
 use App\Models\Followimg;
+use App\Models\FollowRing;
 use App\Models\User;
 use App\Models\UserBlocked;
 use App\Models\UserRate;
@@ -89,6 +90,7 @@ class UsersController extends Controller
             ->leftjoin('prods', 'prods.uid', 'user.id')
             ->leftjoin('followings', 'followings.uid', 'user.id')
             ->leftjoin('followers', 'followers.uid', 'user.id')
+            ->leftjoin('follow_ring', 'follow_ring.uid', 'user.id')
             ->leftjoin('user_rates', 'user_rates.uid', 'user.id')
             ->select(
                 'user.*',
@@ -104,15 +106,23 @@ class UsersController extends Controller
                 'regions.name_en as regions_name_en',
             )
             ->groupBy('user.id')
-            ->first($request['id']);
+            ->where('user.id',$request['id'])
+            ->get();
         $flag = 0;
+        $fav=0;
         if (isset($request['anther_user_id'])) {
             $follow = Follower::where('followers.uid', $request['id'])->where('followers.fid', $request['anther_user_id'])->get();
+            $fav=FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
+
             if ($follow) {
                 $flag = 1;
             }
+            if($fav){
+                $fav=1;
+            }
         }
         $data['user']->is_follow = $flag;
+        $data['user']->fav=$fav;
         return $this->apiResponse($request, trans('language.message'), $data['user'], true);
     }
 
@@ -194,13 +204,21 @@ class UsersController extends Controller
             }
             $users = $users->paginate(10);
             $flag = 0;
+            $fav=0;
             if (isset($request['anther_user_id'])) {
                 $follow = Follower::where('followers.uid', $request['id'])->where('followers.fid', $request['anther_user_id'])->get();
+                $fav=FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
+
                 if ($follow) {
                     $flag = 1;
                 }
+                if($fav){
+                    $fav=1;
+                }
             }
-            $users->follow = $flag;
+                $users->follow = $flag;
+                $users->fav = $fav;
+
         return $this->apiResponse($request, trans('language.message'), $users, true);
         // ->get();
         // $flag=0;
