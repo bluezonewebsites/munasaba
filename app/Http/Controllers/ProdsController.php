@@ -34,7 +34,7 @@ class ProdsController extends ApiController
                 'prods.*',
                 'main_cat.name_ar as main_cat_name',
                 'sub_cat.name_ar as sub_cat_name',
-                'prod_imgs.img',
+                'prod_imgs.img as prods_image',
                 'prod_imgs.mtype',
                 'user.name as user_name',
                 'user.last_name as user_last_name',
@@ -48,7 +48,7 @@ class ProdsController extends ApiController
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
-            )->paginate(10);
+            )->groupBy('prods.id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
     public function getAllProdsById(Request $request)
@@ -86,7 +86,7 @@ class ProdsController extends ApiController
                 
                 DB::raw('COUNT(prods_rates.prod_id) as comments_number')
 
-            )->first();
+            )->groupBy('prods.id')->first();
             $fav=0;
             if (isset($request['anther_user_id'])) {
                 $fav=FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
@@ -115,15 +115,15 @@ class ProdsController extends ApiController
         $cat_id = $request['cat_id'];
         $country_id = $request['country_id'];
         $prods = DB::table('prods')
-            ->where('prods.country_id', $country_id)
-            ->where('prods.cat_id', $cat_id)
-            ->leftjoin('countries', 'countries.id', 'prods.country_id')
-            ->leftjoin('regions', 'regions.id', 'prods.region_id')
-            ->leftjoin('cities', 'cities.id', 'prods.city_id')
-            ->leftjoin('cats as main_cat', 'main_cat.id', 'prods.cat_id')
-            ->leftjoin('cats as sub_cat', 'sub_cat.id', 'prods.sub_cat_id')
-            ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
-            ->leftjoin('user', 'user.id', 'prods.uid')
+        ->leftjoin('countries', 'countries.id', 'prods.country_id')
+        ->leftjoin('regions', 'regions.id', 'prods.region_id')
+        ->leftjoin('cities', 'cities.id', 'prods.city_id')
+        ->leftjoin('cats as main_cat', 'main_cat.id', 'prods.cat_id')
+        ->leftjoin('cats as sub_cat', 'sub_cat.id', 'prods.sub_cat_id')
+        ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
+        ->leftjoin('user', 'user.id', 'prods.uid')
+        ->where('prods.country_id', $country_id)
+        ->where('prods.cat_id', $cat_id)
             ->select(
                 'prods.*',
                 'main_cat.name_ar as main_cat_name',
@@ -140,10 +140,12 @@ class ProdsController extends ApiController
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
-            )->paginate(10);
-        $prods->images=DB::table('prod_imgs')
-        ->leftjoin('prods', 'prods.id', 'prod_imgs.prod_id')
-        ->select('prod_imgs.*',)->get();
+            )->groupBy('prods.id')->orderBy('prods.created_at', 'asc')
+            ->paginate(10);
+            $prods->images=DB::table('prod_imgs')
+            ->leftjoin('prods', 'prods.id', 'prod_imgs.prod_id')
+            ->select('prod_imgs.*',)->get();
+            
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -153,20 +155,20 @@ class ProdsController extends ApiController
     {
         $country_id = $request['country_id'];
         $prods = DB::table('prods')
-        ->where('prods.country_id', $country_id);
-        $prods->leftjoin('countries', 'countries.id', 'prods.country_id')
-            ->leftjoin('regions', 'regions.id', 'prods.region_id')
+        ->leftjoin('countries', 'countries.id', 'prods.country_id')
+        ->leftjoin('regions', 'regions.id', 'prods.region_id')
             ->leftjoin('cities', 'cities.id', 'prods.city_id')
             ->leftjoin('cats as main_cat', 'main_cat.id', 'prods.cat_id')
             ->leftjoin('cats as sub_cat', 'sub_cat.id', 'prods.sub_cat_id')
             ->leftjoin('prod_imgs', 'prod_imgs.prod_id', 'prods.id')
             ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
             ->leftjoin('user', 'user.id', 'prods.uid')
-            ->select(
+            ->where('prods.country_id', $country_id);
+           $prods->select(
                 'prods.*',
                 'main_cat.name_ar as main_cat_name',
                 'sub_cat.name_ar as sub_cat_name',
-                'prod_imgs.img',
+                'prod_imgs.img as prods_image',
                 'prod_imgs.mtype',
                 'user.name as user_name',
                 'user.last_name as user_last_name',
@@ -180,7 +182,7 @@ class ProdsController extends ApiController
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
-            );
+            )->groupBy('prods.id');
             if (isset($request['city_id'])) {
                 $prods->where('prods.city_id', $request['city_id']);
             }
@@ -203,6 +205,9 @@ class ProdsController extends ApiController
                 $prods->OrderBy('prods.created_at', 'DESC');
             }
             $prods=$prods->paginate(10);
+            // $prods->images=DB::table('prod_imgs')
+            // ->leftjoin('prods', 'prods.id', 'prod_imgs.prod_id')
+            // ->select('prod_imgs.*',)->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -213,8 +218,6 @@ class ProdsController extends ApiController
         $user_id = $request['uid'];
         $country_id = $request['country_id'];
         $prods = DB::table('prods')
-        ->where('prods.country_id', $country_id)
-        ->where('prods.uid', $user_id)        
         ->leftjoin('countries', 'countries.id', 'prods.country_id')
         ->leftjoin('regions', 'regions.id', 'prods.region_id')
         ->leftjoin('cities', 'cities.id', 'prods.city_id')
@@ -223,11 +226,13 @@ class ProdsController extends ApiController
         ->leftjoin('prod_imgs', 'prod_imgs.prod_id', 'prods.id')
         ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
         ->leftjoin('user', 'user.id', 'prods.uid')
+        ->where('prods.country_id', $country_id)
+        ->where('prods.uid', $user_id)        
         ->select(
             'prods.*',
             'main_cat.name_ar as main_cat_name',
             'sub_cat.name_ar as sub_cat_name',
-            'prod_imgs.img',
+            'prod_imgs.img as prods_image',
             'prod_imgs.mtype',
             'user.name as user_name',
             'user.last_name as user_last_name',
@@ -241,7 +246,7 @@ class ProdsController extends ApiController
             'regions.name_ar as regions_name_ar',
             'regions.name_en as regions_name_en',
             DB::raw('COUNT(prods_rates.prod_id) as comments')
-        )->paginate(10);
+        )->groupBy('prods.id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -253,8 +258,7 @@ class ProdsController extends ApiController
         $country_id = $request['country_id'];
         $uid = $request['uid'];
         $prods = DB::table('prods')
-        ->where('prods.country_id', $country_id)
-        ->where('prods.name', 'LIKE', '%' . $keyword . '%')->orWhere('prods.descr', 'LIKE', '%' . $keyword . '%')        ->leftjoin('countries', 'countries.id', 'prods.country_id')
+        ->leftjoin('countries', 'countries.id', 'prods.country_id')
         ->leftjoin('regions', 'regions.id', 'prods.region_id')
         ->leftjoin('cities', 'cities.id', 'prods.city_id')
         ->leftjoin('cats as main_cat', 'main_cat.id', 'prods.cat_id')
@@ -262,11 +266,19 @@ class ProdsController extends ApiController
         ->leftjoin('prod_imgs', 'prod_imgs.prod_id', 'prods.id')
         ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
         ->leftjoin('user', 'user.id', 'prods.uid')
-        ->select(
+        ->where('prods.country_id', $country_id);
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        if ($blocked_user) {
+            $prods=$prods->where('prods.uid', '!=', $blocked_user->to_uid);
+        }
+        $prods = $prods->where(function ($query) use ($keyword) {
+            $query->where('prods.name', 'LIKE', '%' . $keyword . '%')
+            ->orWhere('prods.descr', 'LIKE', '%' . $keyword . '%');
+        })->select(
             'prods.*',
             'main_cat.name_ar as main_cat_name',
             'sub_cat.name_ar as sub_cat_name',
-            'prod_imgs.img',
+            'prod_imgs.img as prods_images',
             'prod_imgs.mtype',
             'user.name as user_name',
             'user.last_name as user_last_name',
@@ -280,12 +292,7 @@ class ProdsController extends ApiController
             'regions.name_ar as regions_name_ar',
             'regions.name_en as regions_name_en',
             DB::raw('COUNT(prods_rates.prod_id) as comments')
-        );
-        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-        if ($blocked_user) {
-            $prods->where('prods.uid', '!=', $blocked_user);
-        }
-        $prods = $prods->paginate(10);
+        )->groupBy('prods.id')->paginate(10);
 
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }

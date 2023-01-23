@@ -73,6 +73,8 @@ Route::post('make_following',[FollowimgController::class,'makeFollowing']);
 //---------------------------- Prods Routes ---------------------------
 Route::post('prods_search',[ProdsController::class,'searchProds']);
 Route::post('prods_add',[ProdsController::class,'storeProd']);
+Route::post('prods_update',[ProdsController::class,'updateProd']);
+
 Route::post('prods_by_category',[ProdsController::class,'getAllProdsByCatid']);
 Route::post('prods_by_id',[ProdsController::class,'getAllProdsById']);
 Route::post('prods',[ProdsController::class,'getAllProdsByCountry']);
@@ -85,6 +87,10 @@ Route::post('like_prods',[ProdsController::class,'makeLikeOnCommentOrReplayOnPro
 Route::post('replay_on_comment',[ProdsController::class,'makeReplayOnComment']);
 
 
+// Contract Cancel already don in service contract controller ->method destroy()
+// void already done 
+//un paied in invoice controller->single invoice, store 
+// service contract , store contract bulk contract , 
 
 //---------------------------- Categories Routes ---------------------------
 
