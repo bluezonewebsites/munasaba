@@ -40,6 +40,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //---------------------------- User Routes ---------------------------
 Route::post('login',[UsersController::class,'login']);
 Route::post('signup',[UsersController::class,'create']);
+Route::post('check-user', [UsersController::class , 'checkUser']);
+Route::post('check-code', [UsersController::class , 'checkCode']);
+Route::post('forgot-password', [UsersController::class , 'forgotPassword']);
 Route::post('rate_user',[UsersController::class,'rateUser']);
 Route::post('get_rate_user',[UsersController::class,'getRateUser']);
 Route::post('profile',[UsersController::class,'profile']);
@@ -90,9 +93,9 @@ Route::post('prods_comments_replay',[ProdsController::class,'getCommentsReplayPr
 
 
 // Contract Cancel already don in service contract controller ->method destroy()
-// void already done 
-//un paied in invoice controller->single invoice, store 
-// service contract , store contract bulk contract , 
+// void already done
+//un paied in invoice controller->single invoice, store
+// service contract , store contract bulk contract ,
 
 //---------------------------- Categories Routes ---------------------------
 

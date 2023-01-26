@@ -1,6 +1,17 @@
 <?php
 
 return [
+    'Password has been restored'=>'Password has been restored',
+    'Reset Password'=>'Reset Password',
+    'sendresetPassword'=>'The code has been sent to your email And Sms address successfully',
+    'Dear'=>'Dear',
+    'activation code is incorrect'=>'activation code is incorrect',
+
+    'if you have any questions you can contact with us in our email'=>'if you have any questions you can contact with us in our email',
+    'title_email_for_send'=>'Your new password is: ',
+    'title_email_for_send2'=>'This number is strictly confidential, please do not share it with anyone else ',
+    'thank you'=>'thank you',
+    'title_email_for_send_old'=>'Your password reset code is: ',
      'count_user'=>[
          'titel'=>'users number',
          'count'=>'number'
@@ -251,7 +262,7 @@ return [
     'Blocked' => 'Blocked',
     'unBlocked' => 'Unblocked Sucsess',
 
-    
+
     'favourite' => 'Favourite',
     'technicain_order_add' => 'Technicain has been added to order .',
     'addTechnicain_msg' => 'please Add Technicain to order ?',

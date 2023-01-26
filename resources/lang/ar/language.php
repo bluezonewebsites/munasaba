@@ -2,6 +2,18 @@
 
 
 return [
+    'Dear'=>'عزيزي',
+    'create_ads_success'=>'تم اضافة اعلانك بنجاح ',
+    'is_price_from_country'=>'عملة الاسعار تابعة الي هي عملة دولة :country',
+    'Reset Password'=>'اعادة تعيين كلمة المرور',
+    'sendresetPassword'=>'تم ارسال الكود الي بريدك الالكتروني بنجاح',
+    'activation code is incorrect'=>'رمز التفعيل غير صحيح',
+    'Password has been restored'=>'تمت استعادة كلمة المرور',
+    'title_email_for_send_old'=>'كود اعادة كلمة السر الخاصه بك هو : ',
+    'if you have any questions you can contact with us in our email'=>'إذا كان لديك أي أسئلة ، يمكنك التواصل معنا عبر بريدنا الإلكتروني',
+    'title_email_for_send'=>'كلمة السر الجديده الخاصة بك هي: '  ,
+    'title_email_for_send2'=>'هذا الرقم سري للغاية الرجاء عدم مشاركته مع اي شخص اخر ',
+    'thank you'=>'شكرا لك ',
   'cant_add_more_images'=>'لايمكنك اضافة المزيدد من الصور الرجاء قم بترقية حسابك ',
     "message-ads-cost"=>"تكلفة الاعلان ",
     'ads-cost'=>"احسب التكلفة",

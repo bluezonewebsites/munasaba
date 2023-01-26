@@ -405,7 +405,10 @@ return [
     'coupon not found'=>'القسيمة غير موجودة',
     'The number of permitted use of the coupon . has been completed'=>'عدد الاستخدام المسموح به للقسيمة. اكتمل',
     'The total price of the order must be at least IDR'=>'يجب أن يكون السعر الإجمالي للطلب على الأقل :min_price د.ك',
-
+    'welcome_app'=>'اهلاً بك في تطبيق مناسبه',
+    'ResetPassword'=>'كود اعادة تعيين كلمة السر هو :code',
+    'Signup'=>'كود التفعيل الخاص بك هو :code',
+    ''=>'',
 
 
 ];
