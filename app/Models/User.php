@@ -35,7 +35,9 @@ class User extends Authenticatable
         'blocked',
         'bio',
         'nots',
-        'regid'
+        'regid',
+        'activation_code',
+        'pass_v'
     ];
 
     /**
@@ -80,7 +82,7 @@ class User extends Authenticatable
     }
     public function following(){
         return $this->hasMany(Followimg::class,'fid','id');
-        
+
     }
     public function userRate(){
         return $this->hasMany(UserRate::class,'user_rated_id','id');

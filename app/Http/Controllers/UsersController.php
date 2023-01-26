@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -62,9 +63,11 @@ class UsersController extends Controller
                 'regid' => isset($data['regid']) ? $data['regid'] : null,
                 'remember_token' => Str::random(10),
                 'pass' => Hash::make($request->password),
+                'pass_v' => $request->password,
                 'pic' => isset($request['image']) ? $image_name : null,
                 'activation_code' => $phone_code,
             ]);
+            SendNotf($data['mobile'], $phone_code,'Signup');
             Auth::login($user);
             $item = auth()->user();
             $token = Auth::user()->createToken('Monasbah');
@@ -75,8 +78,8 @@ class UsersController extends Controller
             return $this->apiResponse($request, trans('language.login'), $user, true);
         } catch (\Exception $e) {
             DB::rollback();
-            return $e->getMessage();
-            //return $this->apiResponse($request, trans('language.same_error'), null, false,500);
+                //            return $e->getMessage();
+            return $this->apiResponse($request, trans('language.same_error'), null, false,500);
 
         }
     }
@@ -299,4 +302,73 @@ class UsersController extends Controller
         ]);
         return $this->apiResponse($request, trans('language.created'), $report_user, true);
     }
+
+
+    public function checkUser(Request $request) {
+
+        $user = User::where('email' , $request->email)->orwhere('mobile' , $request->email)->first();
+        if(!$user){
+            return $this->apiResponse($request, __('language.not_ExistemailPhone'), null, false,500);
+        }
+        $user->activation_code= rand ( 1000 , 9999 );
+        $user->save();
+        $from=env('MAIL_FROM_ADDRESS');
+        $data=[];
+        $data["subject"] = __('language.Reset Password');
+        $data["code"] = $user->activation_code;
+        $data["name"] = $user->name;
+        $data["email"] = $request->email;
+       // SendNotf($user->mobile, $data["code"],'ResetPassword');
+//        Mail::send('emails.resetPassword', $data, function ($message) use ($data, $from) {
+//            $message->from($from)->to($data["email"], $data["email"] )
+//                ->subject($data["subject"]);
+//        });
+        return $this->apiResponse($request, trans('language.sendresetPassword'), $user->id, true);
+    }
+    public function checkCode(Request $request)
+    {
+        $validator = validator($request->all(), [
+            'user_id' => 'required|integer',
+            'code' => 'required|max:4',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = is_array($validator->errors()->all())?$validator->errors()->all():[$validator->errors()->all()];
+            return $this->apiResponse($request, $errors, null, false,500);
+        }
+
+        $user = User::where('id', $request->user_id)->first();
+        if(!$user){
+            return $this->apiResponse($request, __('language.user_not_exist'), null, false,500);
+        }
+
+        if($user->activation_code ==  $request->code){
+            return $this->apiResponse($request, trans('language.message'), $user, true);
+        }
+        return $this->apiResponse($request, __('language.activation code is incorrect'), null, false,500);
+
+    }
+    public function forgotPassword(Request $request) {
+
+        $validator = \Validator::make($request->all(), [
+            'user_id'  => 'required|integer|exists:user,id',
+            'password' => 'required|string|min:3|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = is_array($validator->errors()->all())?$validator->errors()->all():[$validator->errors()->all()];
+            return $this->apiResponse($request, $errors, null, false,500);
+        }
+
+        User::where('id',$request->user_id)->update([
+            'pass' => bcrypt($request->password),
+            'activation_code' => null,
+            'pass_v' =>$request->password
+        ]);
+        return $this->apiResponse($request, trans('language.Password has been restored'), null, true);
+
+
+
+    }
+
 }

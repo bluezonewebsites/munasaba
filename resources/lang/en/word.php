@@ -393,6 +393,8 @@ return [
     'The number of permitted use of the coupon . has been completed'=>'The number of permitted use of the coupon . has been completed',
     'The total price of the order must be at least IDR'=>'The total price of the order must be at least :min_price KWD',
 
-
+    'welcome_app'=>'Welcome to the Monasbh App',
+    'ResetPassword'=>'The password reset code is :code .',
+    'Signup'=>'Your activation code is :code .',
 
 ];
