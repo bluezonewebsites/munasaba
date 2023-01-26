@@ -31,6 +31,7 @@ class ProdRate extends Model
         $data['comment_user_verified'] = $this->user->verified;
         $data['comment_user_pic'] = $this->user->pic;
         $data['is_like'] = $this->is_like;
+        $data['count_like'] = $this->likes->count();
         return $data;
     }
 //'prods_rates.*',
