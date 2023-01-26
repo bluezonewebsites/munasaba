@@ -2,6 +2,8 @@
 
 
 return [
+    'ads_not_found'=>'هذا الاعلان لم يعد متاح حالياً ',
+    'question_not_found'=>'هذا السؤال لم يعد متاح حالياً ',
     'Dear'=>'عزيزي',
     'create_ads_success'=>'تم اضافة اعلانك بنجاح ',
     'is_price_from_country'=>'عملة الاسعار تابعة الي هي عملة دولة :country',

@@ -29,7 +29,7 @@ class QuestionController extends ApiController
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
         )->groupBy('questions.id')
-        ->paginate(10);     
+        ->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
     public function getAllQuestionByCityid(Request $request)
@@ -49,11 +49,11 @@ class QuestionController extends ApiController
         if (isset($request['uid'])) {
             $question->where('questions.uid', $request['uid']);
         }
-        $question=$question->paginate(10); 
+        $question=$question->paginate(10);
     return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
-    
+
     public function getAllQuestion(Request $request)
     {
         $uid = $request['uid'];
@@ -69,7 +69,7 @@ class QuestionController extends ApiController
         ,'user.verified as user_verified',
         DB::raw('COUNT(comment_on_questions.quest_id) as comments')
     );
-        $blocked_user = UserBlocked::where('from_uid', $uid)->first();        
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if($blocked_user){
             $question->where('questions.uid', '!=', $blocked_user);
         }
@@ -143,11 +143,11 @@ class QuestionController extends ApiController
         return $this->apiResponse($request, trans('language.created'), $comment_on_question, true);
     }
 
-    
+
 
     public function makeLikeOnCommentOrReplayOnQuestion(Request $request)
     {
-        //type == 1 -> like on comment 
+        //type == 1 -> like on comment
         //type ==0 ->  like on replay
         $like=LikeOnQuest::where('uid',$request['uid'])
         ->where('comment_id',$request['comment_id'])
@@ -186,7 +186,7 @@ class QuestionController extends ApiController
     )->groupBy('comment_on_questions.id');
         $comment=$comment->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $comment, true);
-    
+
     }
 
     public function getCommentsReplayQuest(Request $request){
@@ -206,14 +206,14 @@ class QuestionController extends ApiController
     )->groupBy('like_on_replay.id');
         $comment=$comment->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $comment, true);
-    
+
     }
 
     public function editQuestion(Request $request)
     {
-        $question = Question::findOrFail($request['id']);
-        if (!$question) {
-            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        $question = Question::find($request['id']);
+        if(!$question){
+            return $this->apiResponse($request, __('language.question_not_found'), null, false, 500);
         }
         $folder = 'image/questions';
         if ($request->hasFile('image')) {
@@ -236,7 +236,10 @@ class QuestionController extends ApiController
 
     public function deleteQuestion(Request $request)
     {
-        $question=Question::findOrFail($request['id']);
+        $question=Question::firstwhere('id',$request->id);
+        if(!$question){
+            return $this->apiResponse($request, __('language.question_not_found'), null, false, 500);
+        }
         $question->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
     }
