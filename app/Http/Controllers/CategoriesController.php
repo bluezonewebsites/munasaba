@@ -17,7 +17,7 @@ class CategoriesController extends  ApiController
         $categories = DB::table('cats')
         ->where('cats.cat_id',0)
         ->select('cats.*')
-        ->paginate(10);
+        ->get();
         $categories->ask= 1;
         return $this->apiResponse($request, trans('language.message'), $categories, true);
     }
@@ -25,7 +25,7 @@ class CategoriesController extends  ApiController
     {
         $sub_categories =DB::table('cats')
         ->where('cats.cat_id',1)
-        ->select('cats.*') 
+        ->select('cats.*')
         ->get();
         return $this->apiResponse($request, trans('language.message'), $sub_categories, true);
     }
@@ -34,7 +34,7 @@ class CategoriesController extends  ApiController
         $cat_id=$request['cat_id'];
         $sub_categories =DB::table('cats')
         ->where('cats.id',$cat_id)
-        ->select('cats.*') 
+        ->select('cats.*')
         ->get();
         return $this->apiResponse($request, trans('language.message'), $sub_categories, true);
     }
@@ -43,7 +43,7 @@ class CategoriesController extends  ApiController
         $cat_id=$request['cat_id'];
         $category = DB::table('cats')
         ->where('cat_id',$cat_id)
-        ->select('cats.*') 
+        ->select('cats.*')
         ->find($cat_id);
         if (!$category) {
             return $this->apiResponse($request, trans('language.message_error'), null, false,500);
