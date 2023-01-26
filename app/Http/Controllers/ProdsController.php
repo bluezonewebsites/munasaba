@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Prod;
+use App\Models\ProdRate;
 use App\Models\Prods;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +19,12 @@ use App\Models\UserBlocked;
 
 class ProdsController extends ApiController
 {
+    public  function  __construct()
+    {
+        if(\request()->header('Authorization')){
+            $this->middleware('auth:sanctum');
+        }
+    }
     public function getAllProdsByCountry(Request $request)
     {
         $prods = DB::table('prods')
@@ -83,7 +90,6 @@ class ProdsController extends ApiController
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
                 'prods_rates.comment as comment_on _prod',
-                
                 DB::raw('COUNT(prods_rates.prod_id) as comments_number')
 
             )->groupBy('prods.id')->first();
@@ -98,14 +104,16 @@ class ProdsController extends ApiController
             $prods->images=DB::table('prod_imgs')
             ->where('prod_id', $request['id'])
             ->select('prod_imgs.*',)->get();
-            $prods->comments=DB::table('prods_rates')
-            ->where('prod_id', $request['id'])
-            ->leftjoin('user', 'user.id', 'prods_rates.uid')
-            ->select('prods_rates.*',
-            'user.name as comment_user_name',
-            'user.last_name as comment_user_last_name',
-            'user.verified as comment_user_verified',
-            'user.pic as comment_user_pic',)->get();
+            $prods->comments=ProdRate::where('prod_id', $request['id'])->get();
+
+//                DB::table('prods_rates')
+//            ->where('prod_id', $request['id'])
+//            ->leftjoin('user', 'user.id', 'prods_rates.uid')
+//            ->select('prods_rates.*',
+//            'user.name as comment_user_name',
+//            'user.last_name as comment_user_last_name',
+//            'user.verified as comment_user_verified',
+//            'user.pic as comment_user_pic',)->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -145,7 +153,7 @@ class ProdsController extends ApiController
             $prods->images=DB::table('prod_imgs')
             ->leftjoin('prods', 'prods.id', 'prod_imgs.prod_id')
             ->select('prod_imgs.*',)->get();
-            
+
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -227,7 +235,7 @@ class ProdsController extends ApiController
         ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
         ->leftjoin('user', 'user.id', 'prods.uid')
         ->where('prods.country_id', $country_id)
-        ->where('prods.uid', $user_id)        
+        ->where('prods.uid', $user_id)
         ->select(
             'prods.*',
             'main_cat.name_ar as main_cat_name',
@@ -337,12 +345,12 @@ class ProdsController extends ApiController
     )->groupBy('likes_on_rates.id');
         $comment=$comment->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $comment, true);
-    
+
     }
 
     public function makeLikeOnCommentOrReplayOnProd(Request $request)
     {
-        //type == 1 -> like on comment 
+        //type == 1 -> like on comment
         //type ==0 ->  like on replay
         $like = LikeOnProd::where('uid', $request['uid'])
             ->where('comment_id', $request['comment_id'])
@@ -443,9 +451,9 @@ class ProdsController extends ApiController
         }
     }
     public function updateProd(Request $request){
-        $prod = Prod::findOrFail($request['id']);
-        if (!$prod) {
-            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        $prod = Prod::find($request['id']);
+        if(!$prod){
+            return $this->apiResponse($request, __('language.ads_not_found'), null, false, 500);
         }
         $folder = 'image/prods/';
         if ($request->hasFile('main_image')) {
@@ -469,7 +477,7 @@ class ProdsController extends ApiController
                 move_uploaded_file($image, $name);
                 $prod_imgs=ProdImage::where('img',$sub_image)->where('prod_id',$prod->id)->first();
                 $prod_imgs->img=$sub_image_name;
-                $prod_imgs->mtype= $type[$k];   
+                $prod_imgs->mtype= $type[$k];
             }
         }
         $prod->cat_id = isset($request->cat_id) ? $request->cat_id : $prod->cat_id;
@@ -505,7 +513,10 @@ class ProdsController extends ApiController
 
     public function deleteProds(Request $request)
     {
-        $prod = Prod::findOrfail($request['id']);
+        $prod = Prod::firstwhere('id',$request->id);
+        if(!$prod){
+            return $this->apiResponse($request, __('language.ads_not_found'), null, false, 500);
+        }
         $prod_image=ProdImage::where('prod_id',$prod->id)->delete();
         $prod->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);

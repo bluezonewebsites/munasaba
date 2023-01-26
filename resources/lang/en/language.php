@@ -6,7 +6,8 @@ return [
     'sendresetPassword'=>'The code has been sent to your email And Sms address successfully',
     'Dear'=>'Dear',
     'activation code is incorrect'=>'activation code is incorrect',
-
+    'ads_not_found' => 'This ad is not currently available',
+    'question_not_found' => 'This question is not currently available',
     'if you have any questions you can contact with us in our email'=>'if you have any questions you can contact with us in our email',
     'title_email_for_send'=>'Your new password is: ',
     'title_email_for_send2'=>'This number is strictly confidential, please do not share it with anyone else ',

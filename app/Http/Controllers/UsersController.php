@@ -67,15 +67,20 @@ class UsersController extends Controller
                 'pic' => isset($request['image']) ? $image_name : null,
                 'activation_code' => $phone_code,
             ]);
-            SendNotf($data['mobile'], $phone_code,'Signup');
+//            SendNotf($data['mobile'], $phone_code,'Signup');
             Auth::login($user);
             $item = auth()->user();
             $token = Auth::user()->createToken('Monasbah');
             $accessToken = $token->plainTextToken;
-            // dd($accessToken);
+            $accessToken = $token->plainTextToken;
+
+            $data=[
+                'user'=>$user,
+                'token'=>$accessToken
+            ];
 
             DB::commit();
-            return $this->apiResponse($request, trans('language.login'), $user, true);
+            return $this->apiResponse($request, trans('language.login'),$data, true);
         } catch (\Exception $e) {
             DB::rollback();
                 //            return $e->getMessage();
@@ -249,9 +254,10 @@ class UsersController extends Controller
         } else {
             $password = $request->password;
             if (Hash::check($password, $user->pass)) {
-                //$token = $request->token;
-                //$accessToken = PersonalAccessToken::findToken($token);
-                return $this->sendResponse($request, trans('language.login'), $user, true, 200);
+                Auth::login($user);
+                $token = Auth::user()->createToken('Monasbah');
+                $accessToken = $token->plainTextToken;
+                return $this->sendResponse($request, trans('language.login'), $user, true, $accessToken, 200);
             } else {
                 return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
             }
