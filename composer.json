@@ -11,7 +11,12 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "vonage/client": "^4.0"
+        "nyholm/psr7": "^1.5",
+        "php-http/httplug": "^2.3",
+        "php-http/message-factory": "^1.0",
+        "symfony/http-client": "^6.2",
+        "vonage/client": "^3.0",
+        "vonage/vonage-laravel": "^1.0"
     },
     "require-dev": {
         "facade/ignition": "^2.5",
