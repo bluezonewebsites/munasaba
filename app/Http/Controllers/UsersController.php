@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Sanctum\PersonalAccessToken;
+use Vonage\Laravel\Facade\Vonage;
 
 class UsersController extends Controller
 {
@@ -324,7 +325,20 @@ class UsersController extends Controller
         $data["code"] = $user->activation_code;
         $data["name"] = $user->name;
         $data["email"] = $request->email;
-       // SendNotf($user->mobile, $data["code"],'ResetPassword');
+        $vonage = app('Vonage\Client');
+        $text = new \Vonage\SMS\Message\SMS("201009156765", 'Monasbh', 'Test SMS using Laravel');
+        $response = Vonage::sms()->send($text);
+
+//        $message = $response->current();
+        dd($response);
+        if ($message->getStatus() == 0) {
+            echo "The message was sent successfully\n";
+        } else {
+            echo "The message failed with status: " . $message->getStatus() . "\n";
+        }
+
+
+        SendNotf($user->mobile, $data["code"],'ResetPassword');
 //        Mail::send('emails.resetPassword', $data, function ($message) use ($data, $from) {
 //            $message->from($from)->to($data["email"], $data["email"] )
 //                ->subject($data["subject"]);
