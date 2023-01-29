@@ -42,6 +42,7 @@ class UsersController extends Controller
         try {
             DB::beginTransaction();
             $phone_code = rand(10000, 99999);
+            $image_name=null;
             $folder = 'image/users/';
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
@@ -65,7 +66,7 @@ class UsersController extends Controller
                 'remember_token' => Str::random(10),
                 'pass' => Hash::make($request->password),
                 'pass_v' => $request->password,
-                'pic' => isset($request['image']) ? $image_name : null,
+                'pic' => $image_name,
                 'activation_code' => $phone_code,
             ]);
 //            SendNotf($data['mobile'], $phone_code,'Signup');
