@@ -36,9 +36,10 @@ class QuestionController extends ApiController
     {
         $city_id = $request['city_id'];
         $question = DB::table('questions')
-        ->leftjoin('user','user.id','questions.uid')
-        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
-        ->where('questions.city_id', $city_id)
+            ->leftjoin('user','user.id','questions.uid')
+            ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
+            ->where('questions.city_id', $city_id)
+            ->whereNull('questions.deleted_at')
         ->select('questions.*'
         ,'user.name as name'
         ,'user.pic as user_pic'
@@ -62,6 +63,7 @@ class QuestionController extends ApiController
         ->leftjoin('user','user.id','questions.uid')
         ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
         ->where('questions.country_id', $country_id)
+        ->whereNull('questions.deleted_at')
         ->select('questions.*'
         ,'user.name as name'
         ,'user.pic as user_pic'
@@ -91,6 +93,7 @@ class QuestionController extends ApiController
         }
         $question=$question->where('questions.quest', 'LIKE', '%' . $keyword . '%')
         ->where('questions.country_id', $country_id)
+            ->whereNull('questions.deleted_at')
         ->select('questions.*'
         ,'user.name as name'
         ,'user.pic as user_pic'
@@ -170,22 +173,27 @@ class QuestionController extends ApiController
 
     public function getQuestionsComments(Request $request){
         $uid = $request['uid'];
-        $comment= DB::table('comment_on_questions')
-        ->leftjoin('user','user.id','comment_on_questions.uid')
-        ->leftjoin('questions','questions.id','comment_on_questions.quest_id');
+        $id = $request['id'];
+        $like_type = $request['like_type'];
+
+        $question= DB::table('questions')
+            ->leftjoin('user','user.id','questions.uid')
+            ->where('questions.id',$id)->select(
+                'questions.*'
+                ,'user.name as name'
+                ,'user.pic as user_pic'
+                ,'user.last_name as last_name',
+                'user.verified as user_verified'
+            )->first();
+        $comment= CommentOnQuestion::where('quest_id',$id);
+
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if ($blocked_user) {
             $comment=$comment->where('comment_on_questions.uid', '!=', $blocked_user->to_uid);
         }
-        $comment=$comment->select('comment_on_questions.*'
-        ,'user.name as name'
-        ,'user.pic as user_pic'
-        ,'user.last_name as last_name'
-        ,'user.verified as user_verified'
-        ,'questions.quest as question_name',
-    )->groupBy('comment_on_questions.id');
-        $comment=$comment->paginate(10);
-        return $this->apiResponse($request, trans('language.message'), $comment, true);
+        $data['question']=$question;
+        $data['comment']=$comment->paginate(10);;
+        return $this->apiResponse($request, trans('language.message'), $data, true);
 
     }
 
