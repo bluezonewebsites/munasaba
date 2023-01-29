@@ -290,8 +290,10 @@ class UsersController extends Controller
         ->select(
         'user_rates.*',
         'rated_user.name as rated_user_name',
+        'rated_user.last_name as rated_last_name',
         'rated_user.pic as rated_user_pic',
         'from_user.name as from_user_name',
+        'from_user.last_name as from_last_name',
         'from_user.pic as from_user_pic'
     )->paginate(10);
     // $blocked_user = UserBlocked::where('from_uid', $uid)->first();
@@ -325,24 +327,25 @@ class UsersController extends Controller
         $data["code"] = $user->activation_code;
         $data["name"] = $user->name;
         $data["email"] = $request->email;
-        $vonage = app('Vonage\Client');
-        $text = new \Vonage\SMS\Message\SMS("201009156765", 'Monasbh', 'Test SMS using Laravel');
-        $response = Vonage::sms()->send($text);
+//        $vonage = app('Vonage\Client');
+//        dd($vonage);
+//        $text = new \Vonage\SMS\Message\SMS("201009156765", 'Monasbh', 'Test SMS using Laravel');
+//        $response = $vonage->sms()->send($text);
 
 //        $message = $response->current();
-        dd($response);
-        if ($message->getStatus() == 0) {
-            echo "The message was sent successfully\n";
-        } else {
-            echo "The message failed with status: " . $message->getStatus() . "\n";
-        }
-
-
-        SendNotf($user->mobile, $data["code"],'ResetPassword');
-//        Mail::send('emails.resetPassword', $data, function ($message) use ($data, $from) {
-//            $message->from($from)->to($data["email"], $data["email"] )
-//                ->subject($data["subject"]);
-//        });
+//        dd($response);
+//        if ($message->getStatus() == 0) {
+//            echo "The message was sent successfully\n";
+//        } else {
+//            echo "The message failed with status: " . $message->getStatus() . "\n";
+//        }
+//
+//
+//        SendNotf($user->mobile, $data["code"],'ResetPassword');
+        Mail::send('emails.resetPassword', $data, function ($message) use ($data, $from) {
+            $message->from($from)->to($data["email"], $data["email"] )
+                ->subject($data["subject"]);
+        });
         return $this->apiResponse($request, trans('language.sendresetPassword'), $user->id, true);
     }
     public function checkCode(Request $request)

@@ -37,6 +37,7 @@ class ProdsController extends ApiController
             ->leftjoin('prod_imgs', 'prod_imgs.prod_id', 'prods.id')
             ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
             ->leftjoin('user', 'user.id', 'prods.uid')
+            ->whereNull('prods.deleted_at')
             ->select(
                 'prods.*',
                 'main_cat.name_ar as main_cat_name',
@@ -71,13 +72,13 @@ class ProdsController extends ApiController
             ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
             ->leftjoin('user', 'user.id', 'prods.uid')
             ->leftjoin('follow_ring', 'follow_ring.uid', 'prods.uid')
-
+            ->whereNull('prods.deleted_at')
             ->select(
                 'prods.*',
                 'main_cat.name_ar as main_cat_name',
                 'sub_cat.name_ar as sub_cat_name',
-                'user.name as name',
-                'user.username as user_name',
+                'user.name as user_name',
+                'user.username as username',
                 'user.last_name as user_last_name',
                 'user.verified as user_verified',
                 'user.pic as user_pic',
@@ -95,7 +96,9 @@ class ProdsController extends ApiController
             )->groupBy('prods.id')->first();
             $fav=0;
             if (isset($request['anther_user_id'])) {
-                $fav=FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
+                $fav=FollowRing::where('follow_ring.uid', $request['id'])
+                    ->where('follow_ring.fid', $request['anther_user_id'])
+                    ->first();
                 if($fav){
                     $fav=1;
                 }
@@ -106,14 +109,6 @@ class ProdsController extends ApiController
             ->select('prod_imgs.*',)->get();
             $prods->comments=ProdRate::where('prod_id', $request['id'])->get();
 
-//                DB::table('prods_rates')
-//            ->where('prod_id', $request['id'])
-//            ->leftjoin('user', 'user.id', 'prods_rates.uid')
-//            ->select('prods_rates.*',
-//            'user.name as comment_user_name',
-//            'user.last_name as comment_user_last_name',
-//            'user.verified as comment_user_verified',
-//            'user.pic as comment_user_pic',)->get();
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -132,6 +127,7 @@ class ProdsController extends ApiController
         ->leftjoin('user', 'user.id', 'prods.uid')
         ->where('prods.country_id', $country_id)
         ->where('prods.cat_id', $cat_id)
+        ->whereNull('prods.deleted_at')
             ->select(
                 'prods.*',
                 'main_cat.name_ar as main_cat_name',
@@ -171,6 +167,7 @@ class ProdsController extends ApiController
             ->leftjoin('prod_imgs', 'prod_imgs.prod_id', 'prods.id')
             ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
             ->leftjoin('user', 'user.id', 'prods.uid')
+            ->whereNull('prods.deleted_at')
             ->where('prods.country_id', $country_id);
            $prods->select(
                 'prods.*',
@@ -236,6 +233,7 @@ class ProdsController extends ApiController
         ->leftjoin('user', 'user.id', 'prods.uid')
         ->where('prods.country_id', $country_id)
         ->where('prods.uid', $user_id)
+            ->whereNull('prods.deleted_at')
         ->select(
             'prods.*',
             'main_cat.name_ar as main_cat_name',
@@ -274,6 +272,7 @@ class ProdsController extends ApiController
         ->leftjoin('prod_imgs', 'prod_imgs.prod_id', 'prods.id')
         ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
         ->leftjoin('user', 'user.id', 'prods.uid')
+            ->whereNull('prods.deleted_at')
         ->where('prods.country_id', $country_id);
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if ($blocked_user) {
@@ -330,21 +329,28 @@ class ProdsController extends ApiController
 
     public function getCommentsReplayProd(Request $request){
         $uid = $request['uid'];
-        $comment= DB::table('likes_on_rates')
-        ->leftjoin('user','user.id','likes_on_rates.uid')
-        ->leftjoin('prods_rates','prods_rates.id','likes_on_rates.comment_id');        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        $id = $request['id'];
+
+        $data['comment']=ProdRate::where('id',$id)->first();
+        $replies= DB::table('likes_on_rates')
+            ->leftjoin('user','user.id','likes_on_rates.uid')
+            ->whereNull('likes_on_rates.deleted_at')
+            ->where('comment_id',$id);
+        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if ($blocked_user) {
-            $comment=$comment->where('like_on_replay.uid', '!=', $blocked_user->to_uid);
+            $replies=$replies->where('like_on_replay.uid', '!=', $blocked_user->to_uid);
         }
-        $comment=$comment->select('likes_on_rates.*'
+        $replies=$replies->select('likes_on_rates.*'
         ,'user.name as user_name'
         ,'user.pic as user_pic'
         ,'user.last_name as user_last_name'
         ,'user.verified as user_verified'
-        ,'prods_rates.comment as replay_comment',
-    )->groupBy('likes_on_rates.id');
-        $comment=$comment->paginate(10);
-        return $this->apiResponse($request, trans('language.message'), $comment, true);
+        );
+        $replies=$replies->paginate(10);
+        $data['lastPage']=$replies->lastPage();
+        $data['currentPage']=$replies->currentPage();
+        $data['replies']=$replies->items();
+        return $this->apiResponse($request, trans('language.message'), $data, true);
 
     }
 

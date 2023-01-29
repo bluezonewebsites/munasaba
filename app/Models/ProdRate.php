@@ -43,7 +43,7 @@ class ProdRate extends Model
     public function getIsLikeAttribute()
     {
         if(Auth()->check()){
-            return $this->likes->where('uid',Auth()->id())->count();
+            return $this->likes->where('uid',Auth()->id())->count() > 0 ? 1 : 0;
         }
         return 0;
     }
