@@ -23,8 +23,10 @@ class CategoriesController extends  ApiController
     }
     public function getAllSubCategories(Request $request)
     {
+        $cat_id=$request['cat_id'];
+
         $sub_categories =DB::table('cats')
-        ->where('cats.cat_id',1)
+        ->where('cats.cat_id',$cat_id)
         ->select('cats.*')
         ->get();
         return $this->apiResponse($request, trans('language.message'), $sub_categories, true);
@@ -33,7 +35,7 @@ class CategoriesController extends  ApiController
     {
         $cat_id=$request['cat_id'];
         $sub_categories =DB::table('cats')
-        ->where('cats.id',$cat_id)
+        ->where('id',$cat_id)
         ->select('cats.*')
         ->get();
         return $this->apiResponse($request, trans('language.message'), $sub_categories, true);
@@ -42,7 +44,7 @@ class CategoriesController extends  ApiController
     {
         $cat_id=$request['cat_id'];
         $category = DB::table('cats')
-        ->where('cat_id',$cat_id)
+        ->where('id',$cat_id)
         ->select('cats.*')
         ->find($cat_id);
         if (!$category) {

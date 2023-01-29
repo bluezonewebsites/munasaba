@@ -97,7 +97,7 @@ class UsersController extends Controller
             ->leftjoin('regions', 'regions.id', 'user.region_id')
             ->leftjoin('cities', 'cities.id', 'user.city_id')
             ->leftjoin('prods', 'prods.uid', 'user.id')
-            ->leftjoin('followings', 'followings.uid', 'user.id')
+            ->leftjoin('followings', 'followings.fid', 'user.id')
             ->leftjoin('followers', 'followers.uid', 'user.id')
             ->leftjoin('follow_ring', 'follow_ring.uid', 'user.id')
             ->leftjoin('user_rates', 'user_rates.uid', 'user.id')
