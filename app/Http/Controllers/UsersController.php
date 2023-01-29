@@ -98,8 +98,8 @@ class UsersController extends Controller
             ->leftjoin('regions', 'regions.id', 'user.region_id')
             ->leftjoin('cities', 'cities.id', 'user.city_id')
             ->leftjoin('prods', 'prods.uid', 'user.id')
-            ->leftjoin('followings', 'followings.fid', 'user.id')
-            ->leftjoin('followers', 'followers.uid', 'user.id')
+            ->leftjoin('followings', 'followings.uid', 'user.id')
+            ->leftjoin('followers', 'followers.fid', 'user.id')
             ->leftjoin('follow_ring', 'follow_ring.uid', 'user.id')
             ->leftjoin('user_rates', 'user_rates.uid', 'user.id')
             ->where('user.id', $request['id'])
@@ -107,7 +107,7 @@ class UsersController extends Controller
                 'user.*',
                 DB::raw('COUNT(prods.uid) as numberOfProds'),
                 DB::raw('COUNT(followings.uid) as Following'),
-                DB::raw('COUNT(followers.uid) as Followers'),
+                DB::raw('COUNT(followers.fid) as Followers'),
                 DB::raw('COUNT(user_rates.uid) as UserRate'),
                 'countries.name_ar as countries_name_ar',
                 'countries.name_en as countries_name_en',
@@ -120,7 +120,7 @@ class UsersController extends Controller
         $flag = 0;
         $fav = 0;
         if (isset($request['anther_user_id'])) {
-            $follow = Follower::where('followers.uid', $request['id'])->where('followers.fid', $request['anther_user_id'])->get();
+            $follow = Follower::where('followers.fid', $request['id'])->where('followers.uid', $request['anther_user_id'])->get();
             $fav = FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
             if ($follow) {
                 $flag = 1;
@@ -193,7 +193,7 @@ class UsersController extends Controller
         $users = DB::table('user')
             ->leftjoin('regions', 'regions.id', 'user.region_id')
             ->leftjoin('cities', 'cities.id', 'user.city_id')
-            ->leftjoin('followers', 'followers.uid', 'user.id');
+            ->leftjoin('followers', 'followers.fid', 'user.id');
         $users = $users->where(function ($query) use ($keyword) {
             $query->where('user.name', 'LIKE', '%' . $keyword . '%')
                 ->OrWhere('user.last_name', 'LIKE', '%' . $keyword . '%');
@@ -213,7 +213,7 @@ class UsersController extends Controller
         $flag = 0;
         $fav = 0;
         if (isset($request['anther_user_id'])) {
-            $follow = Follower::where('followers.uid', $request['id'])->where('followers.fid', $request['anther_user_id'])->get();
+            $follow = Follower::where('followers.fid', $request['id'])->where('followers.uid', $request['anther_user_id'])->get();
             $fav = FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
 
             if ($follow) {
