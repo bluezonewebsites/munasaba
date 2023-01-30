@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fav;
 use App\Models\Prod;
 use App\Models\ProdRate;
 use App\Models\Prods;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\ApiController;
 use App\Models\CommentOnProd;
@@ -95,11 +97,11 @@ class ProdsController extends ApiController
 
             )->groupBy('prods.id')->first();
             $fav=0;
-            if (isset($request['anther_user_id'])) {
-                $fav=FollowRing::where('follow_ring.uid', $request['id'])
-                    ->where('follow_ring.fid', $request['anther_user_id'])
+            if (Auth::id()) {
+                $fav_mo=Fav::where('prod_id', $request['id'])
+                    ->where('uid', Auth::id())
                     ->first();
-                if($fav){
+                if($fav_mo){
                     $fav=1;
                 }
             }
@@ -318,8 +320,11 @@ class ProdsController extends ApiController
 
     public function makeReplayOnComment(Request $request)
     {
+        if(!Auth::user()){
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
         $replay_on_comment = ReplayOnComment::create([
-            'uid' => $request['uid'],
+            'uid' =>  Auth::id(),
             'comment_id' => $request['comment_id'],
             'mention' => isset($request['mention']) ? $request['mention'] : '-',
             'comment' => isset($request['comment']) ? $request['comment'] : null,
@@ -328,19 +333,19 @@ class ProdsController extends ApiController
     }
 
     public function getCommentsReplayProd(Request $request){
-        $uid = $request['uid'];
+        $uid = Auth::id();
         $id = $request['id'];
 
         $data['comment']=ProdRate::where('id',$id)->first();
-        $replies= DB::table('likes_on_rates')
-            ->leftjoin('user','user.id','likes_on_rates.uid')
-            ->whereNull('likes_on_rates.deleted_at')
-            ->where('comment_id',$id);
-        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        $replies= DB::table('comment_on_rates')
+            ->leftjoin('user','user.id','comment_on_rates.uid')
+            ->whereNull('comment_on_rates.deleted_at')
+            ->where('comment_on_rates.comment_id',$id);
+        $blocked_user = UserBlocked::where('from_uid', $uid)->pluck('to_uid');
         if ($blocked_user) {
-            $replies=$replies->where('like_on_replay.uid', '!=', $blocked_user->to_uid);
+            $replies=$replies->whereNotIn('like_on_replay.uid',  $blocked_user);
         }
-        $replies=$replies->select('likes_on_rates.*'
+        $replies=$replies->select('comment_on_rates.*'
         ,'user.name as user_name'
         ,'user.pic as user_pic'
         ,'user.last_name as user_last_name'
