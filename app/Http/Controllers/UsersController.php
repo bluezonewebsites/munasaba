@@ -120,17 +120,18 @@ class UsersController extends Controller
         $flag = 0;
         $fav = 0;
         if (isset($request['anther_user_id'])) {
-            $follow = Follower::where('followers.fid', $request['id'])->where('followers.uid', $request['anther_user_id'])->get();
-            $fav = FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
+            $follow = Follower::where('followers.fid', $request['id'])->where('followers.uid', $request['anther_user_id'])->first();
+            $fav_mod = FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->first();
             if ($follow) {
                 $flag = 1;
             }
-            if ($fav) {
+            if ($fav_mod) {
                 $fav = 1;
             }
+
         }
         $data['user']->is_follow = $flag;
-        $data['user']->fav = $fav;
+        $data['user']->active_notification = $fav;
         return $this->apiResponse($request, trans('language.message'), $data['user'], true);
     }
 
@@ -327,7 +328,7 @@ class UsersController extends Controller
         $data["subject"] = __('language.Reset Password');
         $data["code"] = $user->activation_code;
         $data["name"] = $user->name;
-        $data["email"] = $request->email;
+        $data["email"] = $user->email;
 //        $vonage = app('Vonage\Client');
 //        dd($vonage);
 //        $text = new \Vonage\SMS\Message\SMS("201009156765", 'Monasbh', 'Test SMS using Laravel');

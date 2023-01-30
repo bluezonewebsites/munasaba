@@ -60,7 +60,7 @@ Route::post('blocked',[UserBlockedController::class,'blocked']);
 
 Route::post('fav_by_user',[FavController::class,'getAllFavByUserid']);
 Route::post('fav_prod',[FavController::class,'makeFavProd']);
-Route::post('notification',[FavController::class,'activeNotifi']);
+Route::post('active_fuser_notification',[FavController::class,'activeNotifi']);
 
 
 
