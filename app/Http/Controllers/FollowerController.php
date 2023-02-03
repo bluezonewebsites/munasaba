@@ -16,9 +16,14 @@ class FollowerController extends ApiController
         ->where('followers.uid',$request['uid'])
         ->leftjoin('user as user_to','user_to.id','followers.uid')
         ->leftjoin('user as user_from','user_from.id','followers.fid')
-        ->select('followers.*','user_from.name as user_from_name'
-        ,'user_to.name as user_to_name')
-        ->get();        
+        ->select(
+            'user_from.id as user_id',
+            'user_from.name as user_name',
+            'user_from.last_name as last_name',
+            'user_from.verified as user_verified',
+            'user_from.pic as user_pic',
+        )
+        ->get();
         return $this->apiResponse($request, trans('language.message'), $follower, true);
     }
     public function makeFollow(Request $request)
