@@ -544,7 +544,7 @@ class ProdsController extends ApiController
         ->where('prods.id',$request['id'])
         ->select('prods.*',)
         ->get();
-        return $this->apiResponse($request, trans('language.update_profile'), $prods, true);
+        return $this->apiResponse($request, trans('language.updatedSuccessfully'), $prods, true);
 
     }
 

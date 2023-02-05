@@ -58,16 +58,16 @@ class RoomController extends ApiController
         })->orWhere(function ($query) use ($sid,$rid) {
             $query->where('user1',  $rid )
             ->Where('user2', $sid );
-        })->first();
+        })->where('deleted',0)->where('user_delete_chat','!=',$sid)->first();
         if(!$room){
            $room= Room::create([
                     'user1'=>$sid,
                     'user2'=>$rid,
                 ]);
         }
-       
+
        return $this->apiResponse($request, trans('language.message'), $room, true);
-        
+
     }
 
     /**
@@ -104,14 +104,25 @@ class RoomController extends ApiController
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Room  $room
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Room $room)
+
+    public function destroy(Request $request)
     {
-        //
+        $id = $request->room_id;
+        $uid = $request->uid;
+        $room=Room::where('id',$id)->where('user_delete_chat','!=',0)->first();
+        if ($room) {
+            Room::where('id',$id)->update([
+                'deleted'=>1
+            ]);
+            Room::where('id',$id)->delete();
+            return $this->apiResponse($request, trans('language.deleted'), [], true);
+        } else {
+            Room::where('id',$id)->update([
+                'user_delete_chat'=>$uid,
+                'deleted'=>1
+            ]);
+            return $this->apiResponse($request, trans('language.deleted'), [], true);
+
+        }
     }
 }

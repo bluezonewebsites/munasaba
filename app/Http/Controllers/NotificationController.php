@@ -54,9 +54,17 @@ class NotificationController extends ApiController
     {
 
         Notification::where('id',$request->notification_id)->delete();
-        return $this->apiResponse($request, trans('language.message'), [], true);
+        return $this->apiResponse($request, trans('language.deleted'), [], true);
 
     }
+    public function deleteAll(Request $request)
+        {
+            $value=Auth::id();
+
+            Notification::where('uid',$value)->delete();
+            return $this->apiResponse($request, trans('language.deleted'), [], true);
+
+        }
 
     public function active(Request $request)
     {
