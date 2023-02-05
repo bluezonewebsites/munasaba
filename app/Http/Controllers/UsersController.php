@@ -2,10 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatReport;
+use App\Models\CommentOnProd;
+use App\Models\CommentOnQuestion;
 use App\Models\Follower;
 use App\Models\Followimg;
 use App\Models\FollowRing;
+use App\Models\LikeOnProd;
 use App\Models\Prod;
+use App\Models\ProdImage;
+use App\Models\ProdRate;
+use App\Models\Question;
+use App\Models\QuestionReport;
+use App\Models\Room;
 use App\Models\User;
 use App\Models\UserBlocked;
 use App\Models\UserRate;
@@ -22,7 +31,12 @@ use Vonage\Laravel\Facade\Vonage;
 
 class UsersController extends Controller
 {
-
+    public  function  __construct()
+    {
+        if(\request()->header('Authorization')){
+            $this->middleware('auth:sanctum');
+        }
+    }
     public function create(Request $request)
     {
         $data = $request->all();
@@ -42,7 +56,9 @@ class UsersController extends Controller
         }
         try {
             DB::beginTransaction();
-            $phone_code = rand(10000, 99999);
+//            $phone_code = rand(10000, 99999);
+            $phone_code=1111;
+
             $image_name=null;
             $folder = 'image/users/';
             if ($request->hasFile('image')) {
@@ -411,4 +427,149 @@ class UsersController extends Controller
 
     }
 
+
+    Public function resendCode(Request $request){
+        $user=User::find($request->user_id);
+            if(!$user){
+                return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+            }
+        $phone_code = rand(10000, 99999);
+        $phone_code=1111;
+        $user->activation_code=$phone_code;
+        $user->save();
+        return $this->apiResponse($request, trans('language.message'), $user->id, true);
+
+    }
+
+    Public function verification(Request $request){
+        $user=User::find($request->user_id);
+        if(!$user){
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
+
+
+        if($user->activation_code != $request->code){
+            return $this->apiResponse($request, __('language.activation code is incorrect'), null, false,500);
+        }
+        $user->activation_code=null;
+        $user->code_verify = 1;
+        $user->save();
+        return $this->apiResponse($request, trans('language.message'), $user->id, true);
+
+    }
+
+    Public function changeMobile(Request $request){
+        $user=Auth::user();
+        if(!$user){
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
+        if($user->mobile != $request->mobile){
+            $user->mobile = $request->mobile;
+            $user->code_verify=0;
+
+        }
+        if($request->has('country_id')){
+            $user->country_id=$request->country_id;
+        }
+        if($request->has('city_id')){
+            $user->city_id=$request->city_id;
+        }
+        if($request->has('region_id')){
+            $user->region_id=$request->region_id;
+        }
+        $user->save();
+        return $this->apiResponse($request, trans('language.updatedSuccessfully'), $user->id, true);
+
+    }
+
+    public function changePassword(Request $request) {
+
+        $validator = \Validator::make($request->all(), [
+            'old_password' => 'required|string|min:3|max:255',
+            'password' => 'required|string|min:3|max:255',
+        ]);
+        $user=Auth::user();
+        if ($validator->fails()) {
+            $errors = is_array($validator->errors()->all())?$validator->errors()->all():[$validator->errors()->all()];
+            return $this->apiResponse($request, $errors, null, false,500);
+        }
+        if(!$user){
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
+        if(Hash::check($request->old_password, $user->pass)){
+                $user -> pass = bcrypt($request->password);
+                $user->pass_v =$request->password;
+                $user->save();
+            return $this->apiResponse($request, trans('language.reset_new_password'), null, true);
+
+        }
+            return $this->apiResponse($request, __('language.password_failed'), null, false,500);
+
+
+    }
+    public function deleteProfileCover(Request $request) {
+        $user=Auth::user();
+        if(!$user){
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
+        $user->cover = null;
+        $user->save();
+        return $this->apiResponse($request, trans('language.updatedSuccessfully'), $user, true);
+
+
+    }
+
+
+    public function delete(Request $request){
+        $user=Auth::user();
+        if(!$user){
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
+
+        try {
+            DB::beginTransaction();
+            $uid= $user->id;
+               $Prods= Prod::where('uid',$uid)->pluck('id');
+                ProdRate::where('uid',$uid)->orWherein('prod_id',$Prods)->delete();
+                ProdRate::where('uid',$uid)->orWherein('prod_id',$Prods)->delete();
+                ProdImage::Wherein('prod_id',$Prods)->delete();
+
+                $Questions=Question::where('uid',$uid)->pluck('id');
+                QuestionReport::where('uid',$uid)->orwherein('q_id',$Questions)->delete();
+                Question::where('uid',$uid)->delete();
+                //type == 1 -> like on comment
+                //type ==0 ->  like on replay
+                $rates=ProdRate::where('uid',$uid)->pluck('id');
+                LikeOnProd::where('uid',$uid)->delete();
+                LikeOnProd::where('like_type',1)->wherein('comment_id',$Questions)->delete();
+                LikeOnProd::where('like_type',0)->wherein('comment_id',$rates)->delete();
+
+
+                UserBlocked::where('to_uid',$uid)->orwhere('from_uid',$uid)->delete();
+                UserRate::where('uid',$uid)->orwhere('user_rated_id',$uid)->delete();
+                UserReport::where('uid',$uid)->orwhere('from_uid',$uid)->delete();
+
+
+
+                $rooms=Room::where('user1',$uid)->orwhere('user2',$uid)->pluck('id');
+                ChatReport::where('uid',$uid)->orwherein('room_id',$rooms)->delete();
+
+                ProdRate::where('uid',$uid)->delete();
+                Room::where('user1',$uid)->orwhere('user2',$uid)->delete();
+                User::where('id',$uid)->delete();
+            DB::commit();
+            return $this->apiResponse($request, trans('language.user_deleted'), [], true);
+        } catch (\Exception $e) {
+            DB::rollback();
+                       return $e->getMessage();
+            return $this->apiResponse($request, trans('language.same_error'), null, false,500);
+
+        }
+
+
+
+
+
+
+    }
 }

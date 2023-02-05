@@ -44,12 +44,25 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 //---------------------------- User Routes ---------------------------
 Route::post('login',[UsersController::class,'login']);
 Route::post('signup',[UsersController::class,'create']);
+Route::post('resend_code',[UsersController::class,'resendCode']);
+Route::post('verification',[UsersController::class,'verification']);
+Route::post('change_mobile',[UsersController::class,'changeMobile']);
+Route::post('change_password',[UsersController::class,'changePassword']);
+Route::post('delete_profile_cover',[UsersController::class,'deleteProfileCover']);
+
+
+
 Route::post('check-user', [UsersController::class , 'checkUser']);
 Route::post('check-code', [UsersController::class , 'checkCode']);
 Route::post('forgot-password', [UsersController::class , 'forgotPassword']);
 Route::post('rate_user',[UsersController::class,'rateUser']);
 Route::post('get_rate_user',[UsersController::class,'getRateUser']);
 Route::post('profile',[UsersController::class,'profile']);
+Route::post('delete_user',[UsersController::class,'delete']);
+
+
+
+
 
 Route::post('report_user',[UsersController::class,'reportUser']);
 Route::post('users_search',[UsersController::class,'searchUsers']);
@@ -148,6 +161,7 @@ Route::post('question_comments_replay',[QuestionController::class,'getCommentsRe
 ############# Room ##################
 Route::post('get_rooms',[RoomController::class,'getRooms']);
 Route::post('create_room',[RoomController::class,'store']);
+Route::post('destroy_room',[RoomController::class,'destroy']);
 ############# Chat ##################
 Route::post('chat_by_room',[ChatController::class,'chatByRoom']);
 Route::post('send_message',[ChatController::class,'store']);
@@ -160,6 +174,7 @@ Route::post('notifications/count' , [NotificationController::class , 'count']);
 Route::post('notifications/show' , [NotificationController::class , 'show']);
 Route::post('notifications/active' , [NotificationController::class , 'active']);
 Route::post('notifications/delete' , [NotificationController::class , 'delete']);
+Route::post('notifications/delete_all' , [NotificationController::class , 'deleteAll']);
 
 ///////////////////////////////// end notifications ///////////////////////////////////////////////
 
