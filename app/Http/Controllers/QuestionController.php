@@ -19,17 +19,18 @@ class QuestionController extends ApiController
     {
         $uid = $request['uid'];
         $question = DB::table('questions')
-        ->leftjoin('user','user.id','questions.uid')
-        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
-        ->where('questions.uid',$uid)
-        ->select('questions.*'
-        ,'user.name as name'
-        ,'user.pic as user_pic'
-        ,'user.last_name as last_name'
-        ,'user.verified as user_verified',
-        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
-        )->groupBy('questions.id')
-        ->paginate(10);
+            ->leftjoin('user','user.id','questions.uid')
+            ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
+            ->whereNull('questions.deleted_at')
+            ->where('questions.uid',$uid)
+            ->select('questions.*'
+            ,'user.name as name'
+            ,'user.pic as user_pic'
+            ,'user.last_name as last_name'
+            ,'user.verified as user_verified',
+            DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+            )->groupBy('questions.id')
+            ->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
     public function getAllQuestionByCityid(Request $request)

@@ -17,6 +17,10 @@ use App\Http\Controllers\UserBlockedController;
 use App\Http\Controllers\UserRateController;
 use App\Http\Controllers\UserReportController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\NotificationController;
+
 use App\Models\Admin;
 use App\Models\Follower;
 use Illuminate\Http\Request;
@@ -128,7 +132,6 @@ Route::post('cities_by_country_id',[CitiesController::class,'getAllCitiesByCount
 
 Route::post('question_by_user_id',[QuestionController::class,'getAllQuestionByUserid']);
 Route::post('question_by_city_id',[QuestionController::class,'getAllQuestionByCityid']);
-
 Route::post('questions',[QuestionController::class,'getAllQuestion']);
 Route::post('questions_search',[QuestionController::class,'searchQuestion']);
 Route::post('questions_add',[QuestionController::class,'storeQuestion']);
@@ -138,5 +141,29 @@ Route::post('like_on_questions',[QuestionController::class,'makeLikeOnCommentOrR
 Route::post('question_edit',[QuestionController::class,'editQuestion']);
 Route::post('question_comments',[QuestionController::class,'getQuestionsComments']);
 Route::post('question_comments_replay',[QuestionController::class,'getCommentsReplayQuest']);
+
+
+//---------------------------- Chat Routes ---------------------------
+
+############# Room ##################
+Route::post('get_rooms',[RoomController::class,'getRooms']);
+Route::post('create_room',[RoomController::class,'store']);
+############# Chat ##################
+Route::post('chat_by_room',[ChatController::class,'chatByRoom']);
+Route::post('send_message',[ChatController::class,'store']);
+
+
+///////////////////////////////// start notifications //////////////////////////////////////////
+Route::post('notifications', [NotificationController::class, 'index']);
+Route::post('notifications/save_token' , [NotificationController::class , 'save_token']);
+Route::post('notifications/count' , [NotificationController::class , 'count']);
+Route::post('notifications/show' , [NotificationController::class , 'show']);
+Route::post('notifications/active' , [NotificationController::class , 'active']);
+Route::post('notifications/delete' , [NotificationController::class , 'delete']);
+
+///////////////////////////////// end notifications ///////////////////////////////////////////////
+
+
+
 
 

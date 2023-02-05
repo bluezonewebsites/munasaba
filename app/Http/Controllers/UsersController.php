@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Follower;
 use App\Models\Followimg;
 use App\Models\FollowRing;
+use App\Models\Prod;
 use App\Models\User;
 use App\Models\UserBlocked;
 use App\Models\UserRate;
@@ -97,30 +98,33 @@ class UsersController extends Controller
             ->leftjoin('countries', 'countries.id', 'user.country_id')
             ->leftjoin('regions', 'regions.id', 'user.region_id')
             ->leftjoin('cities', 'cities.id', 'user.city_id')
-            ->leftjoin('prods', 'prods.uid', 'user.id')
-            ->leftjoin('followings', 'followings.uid', 'user.id')
-            ->leftjoin('followers', 'followers.fid', 'user.id')
-            ->leftjoin('follow_ring', 'follow_ring.uid', 'user.id')
-            ->leftjoin('user_rates', 'user_rates.uid', 'user.id')
+//            ->leftjoin('prods', 'prods.uid', 'user.id')
+//            ->leftjoin('followings', 'followings.uid', 'user.id')
+//            ->leftjoin('followers', 'followers.uid', 'user.id')
+//            ->leftjoin('follow_ring', 'follow_ring.uid', 'user.id')
+//            ->leftjoin('user_rates', 'user_rates.uid', 'user.id')
             ->where('user.id', $request['id'])
             ->select(
                 'user.*',
-                DB::raw('COUNT(prods.uid) as numberOfProds'),
-                DB::raw('COUNT(followings.uid) as Following'),
-                DB::raw('COUNT(followers.fid) as Followers'),
-                DB::raw('COUNT(user_rates.uid) as UserRate'),
                 'countries.name_ar as countries_name_ar',
                 'countries.name_en as countries_name_en',
                 'cities.name_ar as cities_name_ar',
                 'cities.name_en as cities_name_en',
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
-            )->groupBy('user.id')
-            ->first();
+            )->first();
+
+        $data['user']->numberOfProds= Prod::where('uid',$request['id'])->count();
+        $data['user']->Following= Followimg::where('uid',$request['id'])->count();
+        $data['user']->Followers= Follower::where('uid',$request['id'])->count();
+        $data['user']->UserRate= UserRate::where('uid',$request['id'])->count();
+
         $flag = 0;
         $fav = 0;
         if (isset($request['anther_user_id'])) {
-            $follow = Follower::where('followers.fid', $request['id'])->where('followers.uid', $request['anther_user_id'])->first();
+            $follow = Follower::where('fid',$request['anther_user_id'] )
+                ->where('uid', $request['id'])
+                ->first();
             $fav_mod = FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->first();
             if ($follow) {
                 $flag = 1;
@@ -199,9 +203,24 @@ class UsersController extends Controller
             $query->where('user.name', 'LIKE', '%' . $keyword . '%')
                 ->OrWhere('user.last_name', 'LIKE', '%' . $keyword . '%');
         })->where('user.country_id', $country_id);
-        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+
+
+        $report_user1= UserBlocked::where('from_uid',$uid)->pluck('to_uid')->toarray();
+        $report_user2= UserBlocked::where('to_uid',$uid)->pluck('from_uid')->toarray();
+        $blocked_user=[];
+        if($report_user1 != null){
+            $blocked_user=array_merge($report_user1,$blocked_user);
+        }
+        if($report_user2 != null){
+            $blocked_user=array_merge($report_user2,$blocked_user);
+        }
         if ($blocked_user) {
-            $users = $users->where('user.uid', '!=', $blocked_user->to_uid);
+            $users = $users->where(function ($query) use ($blocked_user) {
+                $query->whereNotIn('user.id',  $blocked_user );
+            });
+
+
+            //where('user.uid', '!=', $blocked_user->to_uid);
         };
         $users = $users->select(
             'user.*',
@@ -213,30 +232,26 @@ class UsersController extends Controller
         $users = $users->paginate(10);
         $flag = 0;
         $fav = 0;
-        if (isset($request['anther_user_id'])) {
-            $follow = Follower::where('followers.fid', $request['id'])->where('followers.uid', $request['anther_user_id'])->get();
-            $fav = FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->get();
+        foreach ($users as $user ){
+            $follow = Follower::where('fid', $request['uid'])
+                ->where('uid', $user->id)->first();
+            $fav_m = Follower::where('uid', $request['uid'])
+                ->where('fid', $user->id)->first();
 
             if ($follow) {
                 $flag = 1;
             }
-            if ($fav) {
+            if ($fav_m) {
                 $fav = 1;
             }
+            $user->follow = $flag;
+            $user->fav = $fav;
         }
-        $users->follow = $flag;
-        $users->fav = $fav;
+
+
 
         return $this->apiResponse($request, trans('language.message'), $users, true);
-        // ->get();
-        // $flag=0;
-        // if (isset($request['anther_user_id'])) {
-        //     $follow = Follower::where('uid', $request['id'])->where('fid', $request['anther_user_id'])->get();
-        //     if($follow){
-        //         $flag=1;
-        //     }
-        // }
-        // $users->is_follow=$flag;
+
     }
 
     public function login(Request $request)
