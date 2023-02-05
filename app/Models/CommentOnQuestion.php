@@ -38,8 +38,10 @@ class CommentOnQuestion extends Model
     public function getIsLikeAttribute()
     {
         if(Auth()->check()){
+
             return $this->likes->where('uid',Auth()->id())->count() > 0 ? 1 : 0;
         }
+
         return 0;
     }
 
@@ -56,6 +58,7 @@ class CommentOnQuestion extends Model
         return $this->belongsTo(Question::class,'quest_id','id');
     }
     public function likes(){
-        return $this->hasMany(LikeOnQuest::class,'comment_id','id')->where('like_type',1);
+        return $this->hasMany(LikeOnQuest::class,'comment_id','id')
+            ->where('like_type',0);
     }
 }

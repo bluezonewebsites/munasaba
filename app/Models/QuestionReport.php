@@ -11,5 +11,7 @@ class QuestionReport extends Model
     use HasFactory,SoftDeletes;
 
     protected $table='questions_reports';
+    protected $guarded = [];
+
 
 }

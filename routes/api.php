@@ -35,6 +35,10 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
+prods_comment_reply
+qusetion_comments
+question_by_city
+question_by_user_id
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -107,6 +111,7 @@ Route::post('report_on_prods',[ProdsController::class,'makeReportOnProd']);
 Route::post('like_prods',[ProdsController::class,'makeLikeOnCommentOrReplayOnProd']);
 Route::post('replay_on_comment',[ProdsController::class,'makeReplayOnComment']);
 Route::post('prods_comments_replay',[ProdsController::class,'getCommentsReplayProd']);
+Route::post('delete_comment_on_rates',[ProdsController::class,'deleteCommentOnRates']);
 
 
 // Contract Cancel already don in service contract controller ->method destroy()
@@ -147,9 +152,13 @@ Route::post('question_by_user_id',[QuestionController::class,'getAllQuestionByUs
 Route::post('question_by_city_id',[QuestionController::class,'getAllQuestionByCityid']);
 Route::post('questions',[QuestionController::class,'getAllQuestion']);
 Route::post('questions_search',[QuestionController::class,'searchQuestion']);
+Route::post('questions_reports',[QuestionController::class,'questionReports']);
 Route::post('questions_add',[QuestionController::class,'storeQuestion']);
 Route::post('questions_delete',[QuestionController::class,'deleteQuestion']);
 Route::post('comment_on_questions',[QuestionController::class,'makeCommentOnQuestion']);
+Route::post('comment_reports',[QuestionController::class,'commentReports']);
+Route::post('reply_reports',[QuestionController::class,'replyReports']);
+Route::post('delete_comment_on_questions',[QuestionController::class,'deleteCommentOnQuestions']);
 Route::post('like_on_questions',[QuestionController::class,'makeLikeOnCommentOrReplayOnQuestion']);
 Route::post('question_edit',[QuestionController::class,'editQuestion']);
 Route::post('question_comments',[QuestionController::class,'getQuestionsComments']);
@@ -162,6 +171,8 @@ Route::post('question_comments_replay',[QuestionController::class,'getCommentsRe
 Route::post('get_rooms',[RoomController::class,'getRooms']);
 Route::post('create_room',[RoomController::class,'store']);
 Route::post('destroy_room',[RoomController::class,'destroy']);
+Route::post('del_multi_room',[RoomController::class,'destroyAll']);
+Route::post('block_room',[RoomController::class,'blockRoom']);
 ############# Chat ##################
 Route::post('chat_by_room',[ChatController::class,'chatByRoom']);
 Route::post('send_message',[ChatController::class,'store']);

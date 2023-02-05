@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ProdRate;
+use App\Models\ReplyReport;
 use App\Models\Question;
+use App\Models\QuestionReport;
+use App\Models\ReportOnComment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 use App\Http\Controllers\ApiController;
@@ -15,6 +20,12 @@ use App\Models\UserBlocked;
 
 class QuestionController extends ApiController
 {
+    public  function  __construct()
+    {
+        if(\request()->header('Authorization')){
+            $this->middleware('auth:sanctum');
+        }
+    }
     public function getAllQuestionByUserid(Request $request)
     {
         $uid = $request['uid'];
@@ -30,7 +41,7 @@ class QuestionController extends ApiController
             ,'user.verified as user_verified',
             DB::raw('COUNT(comment_on_questions.quest_id) as comments')
             )->groupBy('questions.id')
-            ->paginate(10);
+            ->latest('id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
     public function getAllQuestionByCityid(Request $request)
@@ -51,7 +62,7 @@ class QuestionController extends ApiController
         if (isset($request['uid'])) {
             $question->where('questions.uid', $request['uid']);
         }
-        $question=$question->paginate(10);
+        $question=$question->latest('id')->paginate(10);
     return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
@@ -76,7 +87,7 @@ class QuestionController extends ApiController
         if($blocked_user){
             $question->where('questions.uid', '!=', $blocked_user);
         }
-        $question=$question->get();
+        $question=$question->latest('id')->get();
          return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
@@ -193,7 +204,7 @@ class QuestionController extends ApiController
             $comment=$comment->where('comment_on_questions.uid', '!=', $blocked_user->to_uid);
         }
         $data['question']=$question;
-        $data['comment']=$comment->paginate(10);;
+        $data['comment']=$comment->latest('id')->paginate(10);;
         return $this->apiResponse($request, trans('language.message'), $data, true);
 
     }
@@ -213,7 +224,7 @@ class QuestionController extends ApiController
         ,'user.verified as user_verified'
         ,'comment_on_questions.comment as replay_comment',
     )->groupBy('like_on_replay.id');
-        $comment=$comment->paginate(10);
+        $comment=$comment->latest('id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $comment, true);
 
     }
@@ -251,6 +262,70 @@ class QuestionController extends ApiController
         }
         $question->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
+    }
+
+    public function deleteCommentOnQuestions(Request $request)
+    {
+
+        $question=CommentOnQuestion::firstwhere('id',$request->id);
+        if(!$question){
+            return $this->apiResponse($request, __('not found'), null, false, 500);
+        }
+        $question->delete();
+        return $this->apiResponse($request, trans('language.deleted'), null, true);
+
+    }
+    public function questionReports(Request $request)
+    {
+
+        //questions_reports //uid	q_id	reson	rdate
+        $report=QuestionReport::where('uid',Auth::id())->where('q_id',$request->q_id)->first();
+        if($report){
+            return $this->apiResponse($request, __('language.y_have_lready_reported'), $report, false, 500);
+        }
+        $report=QuestionReport::create([
+            'uid'=>Auth::id(),
+            'q_id'=>$request->q_id,
+            'reson'=>$request->reason,
+        ]);
+        return $this->apiResponse($request, trans('language.y_reported'), $report, true);
+    }
+    public function commentReports(Request $request)
+    {
+
+        //comment_reports //uid	comment_id	reason	rdate
+        $report=ReportOnComment::where('uid',Auth::id())->
+        where('comment_id',$request->comment_id)->first();
+
+        if($report){
+            return $this->apiResponse($request, __('language.y_have_lready_reported'), $report, false, 500);
+        }
+        $report=ReportOnComment::create([
+            'uid'=>Auth::id(),
+            'comment_id'=>$request->comment_id,
+            'reason'=>$request->reason,
+        ]);
+
+        return $this->apiResponse($request, trans('language.y_reported'), $report, true);
+    }
+
+    public function replyReports(Request $request)
+    {
+
+        //comment_reports //uid	comment_id	reason	rdate
+        $report=ReplyReport::where('uid',Auth::id())->
+        where('comment_id',$request->reply_id)->first();
+
+        if($report){
+            return $this->apiResponse($request, __('language.y_have_lready_reported'), $report, false, 500);
+        }
+        $report=ReplyReport::create([
+            'uid'=>Auth::id(),
+            'comment_id'=>$request->reply_id,
+            'reason'=>$request->reason,
+        ]);
+
+        return $this->apiResponse($request, trans('language.y_reported'), $report, true);
     }
     /**
      * Display a listing of the resource.

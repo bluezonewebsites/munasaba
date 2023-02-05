@@ -8,15 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class ReportOnComment extends Model
 {
     use HasFactory;
-    
+
     protected $table='comment_reports';
 
-    protected $fillable = [
-        'comment_id',
-        'uid',
-        'reson'
-
-    ];
+    protected $guarded = [];
 
     public function user(){
         return $this->belongsTo(User::class);
