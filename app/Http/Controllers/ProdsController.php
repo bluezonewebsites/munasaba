@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fav;
+use App\Models\LikeOnReplay;
 use App\Models\Prod;
 use App\Models\ProdRate;
 use App\Models\Prods;
@@ -341,10 +342,28 @@ class ProdsController extends ApiController
             ->leftjoin('user','user.id','comment_on_rates.uid')
             ->whereNull('comment_on_rates.deleted_at')
             ->where('comment_on_rates.comment_id',$id);
-        $blocked_user = UserBlocked::where('from_uid', $uid)->pluck('to_uid');
-        if ($blocked_user) {
-            $replies=$replies->whereNotIn('like_on_replay.uid',  $blocked_user);
+
+        $report_user1= UserBlocked::where('from_uid',$uid)->pluck('to_uid')->toarray();
+        $report_user2= UserBlocked::where('to_uid',$uid)->pluck('from_uid')->toarray();
+        $blocked_user=[];
+        if($report_user1 != null){
+            $blocked_user=array_merge($report_user1,$blocked_user);
         }
+        if($report_user2 != null){
+            $blocked_user=array_merge($report_user2,$blocked_user);
+        }
+        if ($blocked_user) {
+            $replies=$replies->where(function ($query) use ($blocked_user) {
+                $query->whereNotIn('comment_on_rates.uid',  $blocked_user );
+            });
+
+
+            //where('user.uid', '!=', $blocked_user->to_uid);
+        };
+//        $blocked_user = UserBlocked::where('from_uid', $uid)->pluck('to_uid');
+//        if ($blocked_user) {
+//            $replies=$replies->whereNotIn('like_on_replay.uid',  $blocked_user);
+//        }
         $replies=$replies->select('comment_on_rates.*'
         ,'user.name as user_name'
         ,'user.pic as user_pic'
@@ -352,6 +371,13 @@ class ProdsController extends ApiController
         ,'user.verified as user_verified'
         );
         $replies=$replies->paginate(10);
+
+        foreach ($replies as $reply){
+               $count= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->count();
+               $LikeOnProduid= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->where('uid',$uid)->first();
+            $reply->like_count=$count;
+            $reply->is_like=$LikeOnProduid?1:0;
+        }
         $data['lastPage']=$replies->lastPage();
         $data['currentPage']=$replies->currentPage();
         $data['replies']=$replies->items();
