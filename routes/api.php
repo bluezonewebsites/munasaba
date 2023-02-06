@@ -173,6 +173,7 @@ Route::post('create_room',[RoomController::class,'store']);
 Route::post('destroy_room',[RoomController::class,'destroy']);
 Route::post('del_multi_room',[RoomController::class,'destroyAll']);
 Route::post('block_room',[RoomController::class,'blockRoom']);
+Route::post('report_room',[RoomController::class,'reportRoom']);
 ############# Chat ##################
 Route::post('chat_by_room',[ChatController::class,'chatByRoom']);
 Route::post('send_message',[ChatController::class,'store']);
