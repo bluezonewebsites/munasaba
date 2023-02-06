@@ -18,6 +18,7 @@ class Notification extends Model
         $data['uid'] = $this->uid;
         $data['fid'] = $this->fid;
         $data['ntype'] = $this->ntype;
+        $data['ndate'] = $this->ndate;
         $data['oid'] = $this->oid;
         $data['ncontent'] = $this->ncontent;
         $data['nfrom'] = $this->nfrom;

@@ -35,8 +35,11 @@ class ChatController extends ApiController
         }
         $receiver_id = $date['room']->user1;
         if ($receiver_id == $uid) $receiver_id = $date['room']->user2;
-        $date['receiver'] =User::whereId($receiver_id)->select('name','last_name','pass_v','bio','cover','mobile','pic','email','id','country_id','city_id','region_id','verified')->first();
-        $date['result'] =Message::where('room_id',$id)->get();
+        $date['receiver'] =User::whereId($receiver_id)
+            ->select('name','last_name','pass_v','bio','cover','mobile','pic',
+                'email','id','country_id','city_id','region_id','verified')
+            ->first();
+        $date['result'] =Message::where('room_id',$id)->latest('id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $date, true);
 
     }
@@ -120,7 +123,7 @@ class ChatController extends ApiController
                     ]);
                 }
              }
-        }elseif($type == 'AUDIO'){
+        }elseif($type == 'AUDIO' || $type == 'VIDEO'){
              foreach ($request->file('images') as $k => $sub_image) {
                  $Slug_image = $k + 1 . '_' . $sid;
                  $image = $sub_image;

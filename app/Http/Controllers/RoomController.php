@@ -27,7 +27,7 @@ class RoomController extends ApiController
         $result = Room::where(function ($query) use ($uid) {
             $query->where('user1',  $uid )
             ->orWhere('user2', $uid );
-        })->where('user_delete_chat','<>', $uid)
+        })->where('user_delete_chat','!=', $uid)
         ->where('deleted', 0)->get();
         return $this->apiResponse($request, trans('language.message'), $result, true);
     }
@@ -92,16 +92,30 @@ class RoomController extends ApiController
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Room  $room
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Room $room)
+
+    public function blockRoom(Request $request)
     {
-        //
+        $id = $request->room_id;
+        $uid = $request->uid;
+        $room=Room::where('id',$id)->first();
+
+        if(!$room){
+            return $this->apiResponse($request, trans('not found'), [], true);
+
+        }
+        if ($room->user_make_block == 0) {
+            $room->user_make_block=$uid;
+            $room->save();
+        } else if ($room->user_make_block == $uid) {
+            $room->user_make_block=0;
+            $room->save();
+            return $this->apiResponse($request, trans('language.unblocked'), [], true);
+
+        } else {
+            return $this->apiResponse($request, trans('language.already_blocked'), null, false,500);
+
+        }
+        return $this->apiResponse($request, trans('language.blocked_'), [], true);
     }
 
 
@@ -125,4 +139,14 @@ class RoomController extends ApiController
 
         }
     }
+     public function destroyAll(Request $request)
+    {
+        $id = $request->room_id;
+        Room::wherein('id',$id)->delete();
+        return $this->apiResponse($request, trans('language.deleted'), [], true);
+
+    }
+
+
+
 }

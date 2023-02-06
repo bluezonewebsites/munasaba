@@ -59,7 +59,7 @@ class ProdsController extends ApiController
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
-            )->groupBy('prods.id')->paginate(10);
+            )->groupBy('prods.id')->latest('id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
     public function getAllProdsById(Request $request)
@@ -147,7 +147,7 @@ class ProdsController extends ApiController
                 'regions.name_ar as regions_name_ar',
                 'regions.name_en as regions_name_en',
                 DB::raw('COUNT(prods_rates.prod_id) as comments')
-            )->groupBy('prods.id')->orderBy('prods.created_at', 'asc')
+            )->groupBy('prods.id')->latest('id')
             ->paginate(10);
             $prods->images=DB::table('prod_imgs')
             ->leftjoin('prods', 'prods.id', 'prod_imgs.prod_id')
@@ -255,7 +255,7 @@ class ProdsController extends ApiController
             'regions.name_ar as regions_name_ar',
             'regions.name_en as regions_name_en',
             DB::raw('COUNT(prods_rates.prod_id) as comments')
-        )->groupBy('prods.id')->paginate(10);
+        )->groupBy('prods.id')->latest('id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -302,7 +302,7 @@ class ProdsController extends ApiController
             'regions.name_ar as regions_name_ar',
             'regions.name_en as regions_name_en',
             DB::raw('COUNT(prods_rates.prod_id) as comments')
-        )->groupBy('prods.id')->paginate(10);
+        )->groupBy('prods.id')->latest('id')->paginate(10);
 
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
@@ -356,21 +356,15 @@ class ProdsController extends ApiController
             $replies=$replies->where(function ($query) use ($blocked_user) {
                 $query->whereNotIn('comment_on_rates.uid',  $blocked_user );
             });
-
-
-            //where('user.uid', '!=', $blocked_user->to_uid);
         };
-//        $blocked_user = UserBlocked::where('from_uid', $uid)->pluck('to_uid');
-//        if ($blocked_user) {
-//            $replies=$replies->whereNotIn('like_on_replay.uid',  $blocked_user);
-//        }
+
         $replies=$replies->select('comment_on_rates.*'
         ,'user.name as user_name'
         ,'user.pic as user_pic'
         ,'user.last_name as user_last_name'
         ,'user.verified as user_verified'
         );
-        $replies=$replies->paginate(10);
+        $replies=$replies->latest('id')->paginate(10);
 
         foreach ($replies as $reply){
                $count= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->count();
@@ -381,6 +375,7 @@ class ProdsController extends ApiController
         $data['lastPage']=$replies->lastPage();
         $data['currentPage']=$replies->currentPage();
         $data['replies']=$replies->items();
+        $data['count_replies']=$replies->count();
         return $this->apiResponse($request, trans('language.message'), $data, true);
 
     }
@@ -556,6 +551,16 @@ class ProdsController extends ApiController
         }
         $prod_image=ProdImage::where('prod_id',$prod->id)->delete();
         $prod->delete();
+        return $this->apiResponse($request, trans('language.deleted'), null, true);
+    }
+    public function deleteCommentOnRates(Request $request)
+    {
+
+        $question=ReplayOnComment::firstwhere('id',$request->id);
+        if(!$question){
+            return $this->apiResponse($request, __('not found'), null, false, 500);
+        }
+        $question->delete();
         return $this->apiResponse($request, trans('language.deleted'), null, true);
     }
 }

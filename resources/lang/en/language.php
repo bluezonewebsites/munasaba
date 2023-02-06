@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'y_reported'=>'reported successfully',
+    'y_have_lready_reported'=>'You have already reported',
     'Password has been restored'=>'Password has been restored',
     'Reset Password'=>'Reset Password',
     'sendresetPassword'=>'The code has been sent to your email And Sms address successfully',
