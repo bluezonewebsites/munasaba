@@ -109,7 +109,7 @@ class ProdsController extends ApiController
             $prods->fav=$fav;
             $prods->images=DB::table('prod_imgs')
             ->where('prod_id', $request['id'])
-            ->select('prod_imgs.*',)->get();
+            ->select('prod_imgs.*',)->whereNull('deleted_at')->get();
             $prods->comments=ProdRate::where('prod_id', $request['id'])->get();
 
         return $this->apiResponse($request, trans('language.message'), $prods, true);
@@ -495,7 +495,10 @@ class ProdsController extends ApiController
             $image_name = 'prods/' . $name;
             $name = public_path($folder) . '/' . $name;
             move_uploaded_file($image, $name);
-            $prod->pic = $image_name;
+            $prod->img = $image_name;
+        }
+        if($request->has('delete_img_ids')){
+            ProdImage::wherein('id',$request->delete_img_ids)->delete();
         }
         if (isset($request['sub_image'])) {
             foreach ($request->file('sub_image') as $k => $sub_image) {
@@ -507,9 +510,11 @@ class ProdsController extends ApiController
                 $sub_image_name = 'prods/' . $name;
                 $name = public_path($folder) . '/' . $name;
                 move_uploaded_file($image, $name);
-                $prod_imgs=ProdImage::where('img',$sub_image)->where('prod_id',$prod->id)->first();
-                $prod_imgs->img=$sub_image_name;
-                $prod_imgs->mtype= $type[$k];
+                ProdImage::create([
+                    'prod_id' => $prod->id,
+                    'img' => $sub_image_name,
+                    'mtype' => $type[$k],
+                ]);
             }
         }
         $prod->cat_id = isset($request->cat_id) ? $request->cat_id : $prod->cat_id;
