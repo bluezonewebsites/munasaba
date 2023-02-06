@@ -39,7 +39,7 @@ class ChatController extends ApiController
             ->select('name','last_name','pass_v','bio','cover','mobile','pic',
                 'email','id','country_id','city_id','region_id','verified')
             ->first();
-        $date['result'] =Message::where('room_id',$id)->latest('id')->paginate(10);
+        $date['result'] =Message::where('room_id',$id)->latest('id')->get();
         return $this->apiResponse($request, trans('language.message'), $date, true);
 
     }

@@ -461,6 +461,12 @@ class UsersController extends Controller
         if(!$user){
             return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
         }
+
+        $old=User::where('mobile',$request->mobile)->first();
+        if($old){
+            return $this->apiResponse($request, trans('language.Existmobile'), null, false, 500);
+        }
+
         if($user->mobile != $request->mobile){
             $user->mobile = $request->mobile;
             $user->code_verify=0;
