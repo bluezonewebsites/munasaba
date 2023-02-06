@@ -209,7 +209,7 @@ class UsersController extends Controller
     public function searchUsers(Request $request)
     {
         $keyword = $request['keyword'];
-        $country_id = $request['country_id'];
+//        $country_id = $request['country_id'];
         $uid = $request['uid'];
         $users = DB::table('user')
             ->leftjoin('regions', 'regions.id', 'user.region_id')
@@ -218,7 +218,7 @@ class UsersController extends Controller
         $users = $users->where(function ($query) use ($keyword) {
             $query->where('user.name', 'LIKE', '%' . $keyword . '%')
                 ->OrWhere('user.last_name', 'LIKE', '%' . $keyword . '%');
-        })->where('user.country_id', $country_id);
+        });//->where('user.country_id', $country_id);
 
 
         $report_user1= UserBlocked::where('from_uid',$uid)->pluck('to_uid')->toarray();
