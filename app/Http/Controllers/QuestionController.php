@@ -94,7 +94,7 @@ class QuestionController extends ApiController
     public function searchQuestion(Request $request)
     {
         $keyword = $request['keyword'];
-        $country_id = $request['country_id'];
+//        $country_id = $request['country_id'];
         $uid = $request['uid'];
         $question = DB::table('questions')
         ->leftjoin('user','user.id','questions.uid')
@@ -104,7 +104,7 @@ class QuestionController extends ApiController
             $question=$question->where('prods.uid', '!=', $blocked_user->to_uid);
         }
         $question=$question->where('questions.quest', 'LIKE', '%' . $keyword . '%')
-        ->where('questions.country_id', $country_id)
+//        ->where('questions.country_id', $country_id)
             ->whereNull('questions.deleted_at')
         ->select('questions.*'
         ,'user.name as name'

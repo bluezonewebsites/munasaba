@@ -264,7 +264,7 @@ class ProdsController extends ApiController
     public function searchProds(Request $request)
     {
         $keyword = $request['keyword'];
-        $country_id = $request['country_id'];
+//        $country_id = $request['country_id'];
         $uid = $request['uid'];
         $prods = DB::table('prods')
         ->leftjoin('countries', 'countries.id', 'prods.country_id')
@@ -275,8 +275,8 @@ class ProdsController extends ApiController
         ->leftjoin('prod_imgs', 'prod_imgs.prod_id', 'prods.id')
         ->leftjoin('prods_rates', 'prods_rates.prod_id', 'prods.id')
         ->leftjoin('user', 'user.id', 'prods.uid')
-            ->whereNull('prods.deleted_at')
-        ->where('prods.country_id', $country_id);
+            ->whereNull('prods.deleted_at');
+//        ->where('prods.country_id', $country_id);
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if ($blocked_user) {
             $prods=$prods->where('prods.uid', '!=', $blocked_user->to_uid);
