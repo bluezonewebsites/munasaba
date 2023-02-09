@@ -107,7 +107,7 @@ class ProdsController extends ApiController
 
     public function getAllProdsByFilter(Request $request)
     {
-        $prods= Prod::whereNull('deleted_at');
+        $prods= Prod::where('country_id', $request['country_id']);
             if (isset($request['city_id'])) {
                 $prods->where('prods.city_id', $request['city_id']);
             }
