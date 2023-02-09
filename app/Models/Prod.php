@@ -35,6 +35,13 @@ class Prod extends Model
         'prod_size',
         'img',
     ];
+    protected $casts = [
+
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+        'end_date' => 'datetime',
+    ];
     public function toArray()
     {
         $data["id"] = $this->id;
@@ -43,7 +50,7 @@ class Prod extends Model
         $data["uid"]=$this->uid;
         $data["name"]=$this->name;
         $data["price"]=$this->price;
-        $data["created_at"]=$this->created_at;
+        $data["created_at"]=$this->created_at!= null ? $this->created_at->format('Y-m-d H:i:s') : null;
         $data["loc"]=$this->loc;
         $data["country_id"]=$this->country_id;
         $data["city_id"]=$this->city_id;
@@ -64,7 +71,7 @@ class Prod extends Model
         $data["duration_use_name"]=$this->duration_use_name;
         $data["duration_use"]=$this->duration_use;
         $data["sell_cost"]=$this->sell_cost;
-        $data["end_date"]=$this-> end_date;
+        $data["end_date"]=$this->end_date!= null ? $this->end_date->format('Y-m-d H:i:s') : null;
         $data["brand_id"]=$this->brand_id;
         $data["material_id"]=$this->material_id;
         $data["color"]=$this-> color;
@@ -72,8 +79,8 @@ class Prod extends Model
         $data["prod_size"]=$this-> prod_size;
         $data["img"]=$this->img;
         $data["deleted"]=$this-> deleted;
-        $data["updated_at"]=$this->updated_at;
-        $data["deleted_at"]=$this-> deleted_at;
+        $data["updated_at"]=$this->updated_at!= null ? $this->updated_at->format('Y-m-d H:i:s') : null;
+        $data["deleted_at"]=$this->deleted_at!= null ? $this->deleted_at->format('Y-m-d H:i:s') : null;
         $data["main_cat_name"]=$this->category ->name_ar;
         $data["sub_cat_name"]=$this->subCategory ->name_ar;
         $img=$this->firstprodImage->first();

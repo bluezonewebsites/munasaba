@@ -24,8 +24,8 @@ class ProdRate extends Model
         $data['comment'] = $this->comment;
         $data['rating'] = $this->rating;
         $data['date'] = $this->date;
-        $data['created_at'] = $this->created_at;
-        $data['updated_at'] = $this->updated_at;
+        $data["updated_at"]=$this->updated_at!= null ? $this->updated_at->format('Y-m-d H:i:s') : null;
+        $data["created_at"]=$this->created_at!= null ? $this->created_at->format('Y-m-d H:i:s') : null;
         $data['comment_user_name'] = $this->user->name;
         $data['comment_user_last_name'] = $this->user->last_name;
         $data['comment_user_verified'] = $this->user->verified;
