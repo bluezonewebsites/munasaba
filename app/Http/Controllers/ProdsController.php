@@ -71,16 +71,6 @@ class ProdsController extends ApiController
             return $this->apiResponse($request, __('language.ads_not_found'), null, false, 500);
 
         }
-            $fav=0;
-            if (Auth::id()) {
-                $fav_mo=Fav::where('prod_id', $request['id'])
-                    ->where('uid', Auth::id())
-                    ->first();
-                if($fav_mo){
-                    $fav=1;
-                }
-            }
-        $data['prod']->fav=$fav;
         $data['images']=$data['prod']->prodImage;
         $data['comments']=ProdRate::where('prod_id', $request['id'])->get();
 
