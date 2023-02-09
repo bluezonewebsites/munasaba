@@ -91,7 +91,6 @@ class Prod extends Model
        $data["regions_name_ar"] = $this->region->name_ar??'';
        $data["regions_name_en"] = $this->region->name_en??'';
        $data["comments"] = $this-> prodRate->count();
-//        $data["is_block"] = $this->is_block();
         return $data;
     }
     protected $appends=[
@@ -119,9 +118,8 @@ class Prod extends Model
     {
         return $this->belongsTo(User::class,'uid','id');
     }
-    public function country()
-    {
-        return $this->belongsTo(Country::class)
+    public function country(){
+        return $this->belongsTo(Country::class,'country_id','id')
             ->withDefault(['id'=>0,
                 'name_ar'=>'',
                 'name_en'=>'',
@@ -131,11 +129,11 @@ class Prod extends Model
     }
     public function city()
     {
-        return $this->belongsTo(City::class)->withDefault(['id'=>0,'name_ar'=>'','name_en'=>'']);
+        return $this->belongsTo(City::class,'city_id','id')->withDefault(['id'=>0,'name_ar'=>'','name_en'=>'']);
     }
     public function region()
     {
-        return $this->belongsTo(Region::class)->withDefault(['id'=>0,'name_ar'=>'','name_en'=>'']);
+        return $this->belongsTo(Region::class,'region_id','id')->withDefault(['id'=>0,'name_ar'=>'','name_en'=>'']);
     }
     public function prodImage()
     {

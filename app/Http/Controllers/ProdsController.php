@@ -66,8 +66,8 @@ class ProdsController extends ApiController
     }
     public function getAllProdsById(Request $request)
     {
-        $prod= Prod::where('id', $request['id'])->first();
-        if(!$prod){
+        $data['prod']= Prod::where('id', $request['id'])->first();
+        if(!$data['prod']){
             return $this->apiResponse($request, __('language.ads_not_found'), null, false, 500);
 
         }
@@ -80,11 +80,11 @@ class ProdsController extends ApiController
                     $fav=1;
                 }
             }
-        $prod->fav=$fav;
-        $prod->images=$prod->prodImage;
-        $prod->comments=ProdRate::where('prod_id', $request['id'])->get();
+        $data['prod']->fav=$fav;
+        $data['images']=$data['prod']->prodImage;
+        $data['comments']=ProdRate::where('prod_id', $request['id'])->get();
 
-        return $this->apiResponse($request, trans('language.message'), $prod, true);
+        return $this->apiResponse($request, trans('language.message'), $data, true);
     }
 
 
