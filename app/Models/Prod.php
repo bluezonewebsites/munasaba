@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Prod extends Model
 {
@@ -88,6 +89,7 @@ class Prod extends Model
        $data["mtype"] =  $img? $img->mtype: '';
        $data["user_name"] = $this->user->name??'';
        $data["user_last_name"] = $this->user->last_name??'';
+       $data["user_pic"] = $this->user->pic??'';
        $data["user_verified"] = $this->user->verified??'';
        $data["countries_name_ar"] = $this->country->name_ar??'';
        $data["countries_name_en"] = $this->country->name_en??'';
@@ -98,6 +100,7 @@ class Prod extends Model
        $data["regions_name_ar"] = $this->region->name_ar??'';
        $data["regions_name_en"] = $this->region->name_en??'';
        $data["comments"] = $this-> prodRate->count();
+       $data["fav"] = $this->isfav();
         return $data;
     }
     protected $appends=[
@@ -158,6 +161,19 @@ class Prod extends Model
     public function comments()
     {
         return $this->hasMany(CommentOnProd::class);
+    }
+    public function isfav()
+    {
+        $fav=0;
+        if (Auth::id()) {
+            $fav_mo=Fav::where('prod_id', $this->id)
+                ->where('uid', Auth::id())
+                ->first();
+            if($fav_mo){
+                $fav=1;
+            }
+        }
+        return $fav;
     }
 
 
