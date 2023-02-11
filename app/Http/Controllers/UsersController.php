@@ -350,13 +350,13 @@ class UsersController extends Controller
 
         $user = User::where('email' , $request->email)->orwhere('mobile' , $request->email)->first();
         if(!$user){
-            if($request->type=='ChangePassword'){
+            if($request->type=='ChangePhone'){
                 return $this->apiResponse($request, __('language.not_ExistemailPhone'), null, true);
 
             }
             return $this->apiResponse($request, __('language.not_ExistemailPhone'), null, false,500);
         }
-        if($request->type=='ChangePassword'){
+        if($request->type=='ChangePhone'){
             return $this->apiResponse($request, trans('language.Existmobile'), [], false,500);
 
 
