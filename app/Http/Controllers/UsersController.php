@@ -244,9 +244,10 @@ class UsersController extends Controller
             'regions.name_en as regions_name_en'
         );
         $users = $users->groupBy('user.id')->paginate(10);
-        $flag = 0;
-        $fav = 0;
+
         foreach ($users as $user ){
+            $flag = 0;
+            $fav = 0;
             $follow = Follower::where('fid', $request['uid'])
                 ->where('uid', $user->id)->first();
             $fav_m = Follower::where('uid', $request['uid'])
@@ -344,11 +345,21 @@ class UsersController extends Controller
     }
 
 
+
     public function checkUser(Request $request) {
 
         $user = User::where('email' , $request->email)->orwhere('mobile' , $request->email)->first();
         if(!$user){
+            if($request->type=='ChangePassword'){
+                return $this->apiResponse($request, __('language.not_ExistemailPhone'), null, true);
+
+            }
             return $this->apiResponse($request, __('language.not_ExistemailPhone'), null, false,500);
+        }
+        if($request->type=='ChangePassword'){
+            return $this->apiResponse($request, trans('language.Existmobile'), [], false,500);
+
+
         }
         $user->activation_code= rand ( 1000 , 9999 );
         $user->save();
@@ -469,8 +480,6 @@ class UsersController extends Controller
 
         if($user->mobile != $request->mobile){
             $user->mobile = $request->mobile;
-            $user->code_verify=0;
-
         }
         if($request->has('country_id')){
             $user->country_id=$request->country_id;
