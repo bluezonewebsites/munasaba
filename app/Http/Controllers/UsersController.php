@@ -442,6 +442,10 @@ class UsersController extends Controller
             if(!$user){
                 return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
             }
+        $mob=$user->mobile;
+        if($request->mobile){
+            $mob=  $request->mobile;
+        }
         $phone_code = rand(10000, 99999);
         $phone_code=1111;
         $user->activation_code=$phone_code;
