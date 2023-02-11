@@ -22,8 +22,8 @@ class FollowerController extends ApiController
     {
         /// متابعين ال uid
         $followers = DB::table('followers')
-        ->where('followers.uid',$request['uid'])
-        ->leftjoin('user as user_from','user_from.id','followers.fid')
+        ->where('followers.fid',$request['uid'])
+        ->leftjoin('user as user_from','user_from.id','followers.uid')
             ->leftjoin('countries', 'countries.id', 'user_from.country_id')
             ->leftjoin('regions', 'regions.id', 'user_from.region_id')
             ->leftjoin('cities', 'cities.id', 'user_from.city_id')
