@@ -204,7 +204,7 @@ class QuestionController extends ApiController
             $comment=$comment->where('comment_on_questions.uid', '!=', $blocked_user->to_uid);
         }
         $data['question']=$question;
-        $data['comment']=$comment->latest('id')->paginate(10);;
+        $data['comment']=$comment->paginate(10);;
         return $this->apiResponse($request, trans('language.message'), $data, true);
 
     }

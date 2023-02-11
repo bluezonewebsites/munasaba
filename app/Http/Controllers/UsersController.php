@@ -132,7 +132,7 @@ class UsersController extends Controller
 
         $data['user']->numberOfProds= Prod::where('uid',$request['id'])->count();
         $data['user']->Following= Followimg::where('uid',$request['id'])->count();
-        $data['user']->Followers= Follower::where('uid',$request['id'])->count();
+        $data['user']->Followers= Follower::where('fid',$request['id'])->count();
         $data['user']->UserRate= UserRate::where('uid',$request['id'])->count();
 
         $flag = 0;

@@ -158,6 +158,10 @@ class Prod extends Model
     {
         return $this->hasMany(ProdRate::class);
     }
+    public function fav()
+    {
+        return $this->hasMany(Fav::class);
+    }
     public function comments()
     {
         return $this->hasMany(CommentOnProd::class);

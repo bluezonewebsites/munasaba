@@ -213,7 +213,7 @@ class ProdsController extends ApiController
         ,'user.last_name as user_last_name'
         ,'user.verified as user_verified'
         );
-        $replies=$replies->latest('id')->paginate(10);
+        $replies=$replies->paginate(10);
 
         foreach ($replies as $reply){
                $count= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->count();
