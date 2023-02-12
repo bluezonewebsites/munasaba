@@ -131,15 +131,15 @@ class UsersController extends Controller
             )->first();
 
         $data['user']->numberOfProds= Prod::where('uid',$request['id'])->count();
-        $data['user']->Following= Followimg::where('uid',$request['id'])->count();
-        $data['user']->Followers= Follower::where('fid',$request['id'])->count();
+        $data['user']->Following= Follower::where('user_id',$request['id'])->count();
+        $data['user']->Followers= Follower::where('to_id',$request['id'])->count();
         $data['user']->UserRate= UserRate::where('uid',$request['id'])->count();
 
         $flag = 0;
         $fav = 0;
         if (isset($request['anther_user_id'])) {
-            $follow = Follower::where('fid',$request['anther_user_id'] )
-                ->where('uid', $request['id'])
+            $follow = Follower::where('user_id',$request['anther_user_id'] )
+                ->where('to_id', $request['id'])
                 ->first();
             $fav_mod = FollowRing::where('follow_ring.uid', $request['id'])->where('follow_ring.fid', $request['anther_user_id'])->first();
             if ($follow) {
@@ -213,8 +213,8 @@ class UsersController extends Controller
         $uid = $request['uid'];
         $users = DB::table('user')
             ->leftjoin('regions', 'regions.id', 'user.region_id')
-            ->leftjoin('cities', 'cities.id', 'user.city_id')
-            ->leftjoin('followers', 'followers.fid', 'user.id');
+            ->leftjoin('cities', 'cities.id', 'user.city_id');
+//            ->leftjoin('followers', 'followers.fid', 'user.id');
         $users = $users->where(function ($query) use ($keyword) {
             $query->where('user.name', 'LIKE', '%' . $keyword . '%')
                 ->OrWhere('user.last_name', 'LIKE', '%' . $keyword . '%');
@@ -248,10 +248,10 @@ class UsersController extends Controller
         foreach ($users as $user ){
             $flag = 0;
             $fav = 0;
-            $follow = Follower::where('fid', $request['uid'])
-                ->where('uid', $user->id)->first();
-            $fav_m = Follower::where('uid', $request['uid'])
-                ->where('fid', $user->id)->first();
+            $follow = Follower::where('user_id', $request['uid'])
+                ->where('to_id', $user->id)->first();
+            $fav_m = Follower::where('to_id', $request['uid'])
+                ->where('user_id', $user->id)->first();
 
             if ($follow) {
                 $flag = 1;
