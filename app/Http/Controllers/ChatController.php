@@ -154,11 +154,9 @@ class ChatController extends ApiController
 
                     ]);
         }
-//
-//
-//             save_notf($rid,false, 'CHAT',$_POST['room_id'], $rid, $sid);
-//
-//
+        $this->save_notf('CHAT',$room_id
+            , 'قام بارسال رسالة',$sid,$rid);
+
 
         return $this->apiResponse($request, trans('language.message'), $message, true);
 

@@ -155,6 +155,15 @@ class QuestionController extends ApiController
             'mention' => isset($request['mention']) ? $request['mention'] : '-',
             'comment' => isset($request['comment']) ? $request['comment'] : null,
         ]);
+        $question=Question::where('id',$request['quest_id'])->first();
+        if($comment_on_question->mention != "-"){
+            $this->save_notf('ASK_REPLY',$request['quest_id']
+                ,'قام بالرد علي تعليقك',$request['uid'],$question->uid);
+        }
+        else{
+            $this->save_notf('ASK_REPLY',$request['quest_id']
+                ,'قام بالرد علي سؤالك',$request['uid'],$question->uid);
+        }
         return $this->apiResponse($request, trans('language.created'), $comment_on_question, true);
     }
 
@@ -173,12 +182,32 @@ class QuestionController extends ApiController
             return $this->apiResponse($request,trans('language.deleted'), null, true);
 
         }else{
-        $like_on_quest= LikeOnQuest::create([
-            'uid' => $request['uid'],
-            'comment_id' => $request['comment_id'],
-            'like_type' => isset($request['like_type']) ? $request['like_type'] : 1,
-        ]);
-    }
+            $like_on_quest= LikeOnQuest::create([
+                'uid' => $request['uid'],
+                'comment_id' => $request['comment_id'],
+                'like_type' => isset($request['like_type']) ? $request['like_type'] : 1,
+            ]);
+
+            if($request['like_type'] == 0)
+            {
+                $created_by= CommentOnQuestion::where('id',$request['comment_id'])->first();
+                if($created_by){
+                    $created_by= $created_by->uid;
+                    $this->save_notf('LIKE_COMMENT',$request['comment_id']
+                        , 'اعجب بتعليقك',$request['uid'],$created_by);
+                }
+            }else{
+                $created_by= CommentOnQuestion::where('id',$request['comment_id'])->first();
+                if($created_by){
+                    $created_by= $created_by->uid;
+                    $this->save_notf('LIKE_REPLY_Questions',$request['comment_id']
+                        , 'اعجب علي ردك',$request['uid'],$created_by);
+                }
+            }
+
+
+        }
+
 
         return $this->apiResponse($request, trans('language.created'), $like_on_quest, true);
     }

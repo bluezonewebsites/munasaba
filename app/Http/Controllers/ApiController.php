@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\FcmTokenModel;
 use App\Models\Notification;
+use App\Models\User;
 use App\Traits\apiResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -12,7 +13,7 @@ use Illuminate\Routing\Controller as BaseController;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
-
+use FCM;
 class ApiController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests , apiResponse;//,apiNotification;
@@ -84,21 +85,10 @@ class ApiController extends BaseController
 
     }
 
-    static function save_notf($uid , $is_all ,$type ,$type_id,$step=null,
-                              $type_model=null,$user_id_model=null,$user_send = null  , $user_r=null){
-        switch($type){
-            case 'CHAT' :
-                $title= 'قام بارسال رسالة';
-                $body= 'قام بارسال رسالة';
-                $image=null;
-                $nfrom='user';
-                $nto='user';
-                break;
-
-        }
+    static function save_notf( $type ,$type_id,$body,$user_send = null  , $user_r=null,$nto='user',$nfrom='user',$is_all=false ){
         $app=__('site.app_name');
         if(!$is_all){
-            $user=User::where('id',$uid)->where('notification',1)->first();
+            $user=User::where('id',$user_r)->where('notification',1)->first();
             if($user){
                 $not= Notification::create([
                     'oid'=>$type_id,
@@ -111,9 +101,24 @@ class ApiController extends BaseController
                 ]);
                 self::send_notf($user->regid,$body,$app,$not);
             }
-
-
-
+        }else{
+            $not=null;
+            foreach ($user_r as $one_user_r){
+                $user=User::where('id',$one_user_r)->where('notification',1)->first();
+                if($user) {
+                    $not = Notification::create([
+                        'oid' => $type_id,
+                        'uid' => $one_user_r,
+                        'fid' => $user_send,
+                        'ntype' => $type,
+                        'ncontent' => $body,
+                        'nfrom' => $nfrom,
+                        'nto' => $nto,
+                    ]);
+                }
+            }
+            $regids=User::wherein('id',$user_r)->where('notification',1)->pluck('regid');
+            self::send_notf_array($regids,$body,$app,$not);
         }
 
 

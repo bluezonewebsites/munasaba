@@ -435,8 +435,6 @@ class UsersController extends Controller
 
 
     }
-
-
     Public function resendCode(Request $request){
         $user=User::find($request->user_id);
             if(!$user){
