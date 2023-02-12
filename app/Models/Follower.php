@@ -8,17 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Follower extends Model
 {
     use HasFactory;
-    
+
     protected $table='followers';
 
     protected $fillable = [
-        'uid',
-        'fid',
+        'user_id',
+        'to_id',
     ];
     public function from_user(){
-        return $this->belongsTo(User::class,'fid','id');
+        return $this->belongsTo(User::class,'user_id','id');
     }
-    public function to_user(){
-        return $this->belongsTo(User::class,'uid','id');
+    public function user(){
+        return $this->belongsTo(User::class,'to_id','id');
     }
 }

@@ -89,9 +89,12 @@ Route::post('active_fuser_notification',[FavController::class,'activeNotifi']);
 
 Route::post('followers',[FollowerController::class,'getAllFollowerByUserid']);
 Route::post('make_follow',[FollowerController::class,'makeFollow']);
+Route::post('following',[FollowerController::class,'getAllFollowingByUserid']);
 
-Route::post('following',[FollowimgController::class,'getAllFollowingByUserid']);
-Route::post('make_following',[FollowimgController::class,'makeFollowing']);
+
+
+//Route::post('following',[FollowimgController::class,'getAllFollowingByUserid']);
+//Route::post('make_following',[FollowimgController::class,'makeFollowing']);
 
 
 

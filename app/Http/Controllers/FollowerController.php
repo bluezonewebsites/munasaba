@@ -22,8 +22,8 @@ class FollowerController extends ApiController
     {
         /// متابعين ال uid
         $followers = DB::table('followers')
-        ->where('followers.fid',$request['uid'])
-        ->leftjoin('user as user_from','user_from.id','followers.uid')
+        ->where('followers.to_id',$request['user_id'])
+        ->leftjoin('user as user_from','user_from.id','followers.user_id')
             ->leftjoin('countries', 'countries.id', 'user_from.country_id')
             ->leftjoin('regions', 'regions.id', 'user_from.region_id')
             ->leftjoin('cities', 'cities.id', 'user_from.city_id')
@@ -41,35 +41,61 @@ class FollowerController extends ApiController
         )->get();
 
         foreach ($followers as $follower){
-            $follower->is_follow= Follower::where('fid',Auth::id())
-                            ->where('uid',$request['uid'])->first() ? 1 :0;
+            $follower->is_follow= Follower::where('user_id',Auth::id())
+                            ->where('to_id',$follower->user_id)->first() ? 1 :0;
         }
         return $this->apiResponse($request, trans('language.message'), $followers, true);
     }
+
+
+
+    public function getAllFollowingByUserid(Request $request)
+    {
+        /// متابعات ال uid
+        $followings = DB::table('followers')
+            ->where('followers.user_id',$request['user_id'])
+            ->leftjoin('user as user_to','user_to.id','followers.to_id')
+            ->leftjoin('countries', 'countries.id', 'user_to.country_id')
+            ->leftjoin('regions', 'regions.id', 'user_to.region_id')
+            ->leftjoin('cities', 'cities.id', 'user_to.city_id')
+            ->select(
+                'followers.*',
+                'user_to.id as user_to_id',
+                'user_to.name as user_name',
+                'user_to.last_name as user_last_name',
+                'user_to.pic as user_pic',
+                'user_to.verified as user_verified',
+                'countries.name_ar as countries_name_ar',
+                'countries.name_en as countries_name_en',
+                'cities.name_ar as cities_name_ar',
+                'cities.name_en as cities_name_en',
+                'regions.name_ar as regions_name_ar',
+                'regions.name_en as regions_name_en'
+            )->paginate(10);
+        foreach ($followings as $follower){
+            $follower->is_follow= Follower::where('to_id',$follower->to_id)
+                ->where('user_id',Auth::id())->first() ? 1 :0;
+        }
+        return $this->apiResponse($request, trans('language.message'), $followings, true);
+    }
     public function makeFollow(Request $request)
     {
-        $user= Follower::where('uid',$request['uid'])->where('fid',$request['anther_user_id'])->first();
+        $user_id=Auth::id();
+        $user= Follower::where('user_id',$user_id)->where('to_id',$request['to_id'])->first();
         if($user){
             $user->delete();
             return $this->apiResponse($request, trans('language.deleted'), null, true);
 
         }else{
             Follower::create([
-                'uid' => $request['uid'],
-                'fid' => $request['anther_user_id'],
+                'user_id' => $user_id,
+                'to_id' => $request['to_id'],
             ]);
-        }
-        $user= Followimg::where('uid',$request['uid'])->where('fid',$request['anther_user_id'])->first();
-        if($user){
-            $user->delete();
-            return $this->apiResponse($request, trans('language.deleted'), null, true);
 
-        }else{
-            Followimg::create([
-                'uid' => $request['uid'],
-                'fid' => $request['anther_user_id'],
-            ]);
+            $this->save_notf('FOLLOW', $user_id
+                , 'قام بمتابعتك', $user_id,$request['to_id']);
         }
+
         return $this->apiResponse($request, trans('language.created'), $user, true);
 
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Fav;
+use App\Models\Follower;
 use App\Models\LikeOnReplay;
 use App\Models\Prod;
 use App\Models\ProdRate;
@@ -165,6 +166,15 @@ class ProdsController extends ApiController
             'rating' => isset($request['rating']) ? $request['rating'] : 0,
             'comment' => isset($request['comment']) ? $request['comment'] : null,
         ]);
+
+
+        $created_by= Prod::where('id',$request['prod_id'])->first();
+        if($created_by){
+            $created_by= $created_by->uid;
+            $this->save_notf('COMMENT_ADV',$request['prod_id']
+                ,'قام بالتعليق علي اعلانك',$request['uid'],$created_by);
+        }
+
         return $this->apiResponse($request, trans('language.created'), $comment_on_prod, true);
     }
 
@@ -179,6 +189,13 @@ class ProdsController extends ApiController
             'mention' => isset($request['mention']) ? $request['mention'] : '-',
             'comment' => isset($request['comment']) ? $request['comment'] : null,
         ]);
+        $created_by= CommentOnProd::where('id',$request['comment_id'])->first();
+        if($created_by){
+            $created_by= $created_by->uid;
+            $this->save_notf('REPLY_COMMENT',$request['comment_id']
+                , 'قام بالرد علي تعليقك',$request['uid'],$created_by);
+        }
+
         return $this->apiResponse($request, trans('language.created'), $replay_on_comment, true);
     }
 
@@ -246,6 +263,22 @@ class ProdsController extends ApiController
                 'comment_id' => $request['comment_id'],
                 'like_type' => isset($request['like_type']) ? $request['like_type'] : 1,
             ]);
+
+            if ($request['like_type'] == 0) {
+                $created_by = CommentOnProd::where('id', $request['comment_id'])->first();
+                if ($created_by) {
+                    $created_by = $created_by->uid;
+                    $this->save_notf('LIKE_COMMENT', $request['comment_id']
+                        , 'اعجب بتعليقك', $request['uid'], $created_by);
+                }
+            } else {
+                $created_by = ReplayOnComment::where('id', $request['comment_id'])->first();
+                if ($created_by) {
+                    $created_by = $created_by->uid;
+                    $this->save_notf('LIKE_REPLY', $request['comment_id']
+                        , 'اعجب علي ردك', $request['uid'], $created_by);
+                }
+            }
         }
         return $this->apiResponse($request, trans('language.created'), $like_on_prod, true);
     }
@@ -323,6 +356,11 @@ class ProdsController extends ApiController
                 }
                 // $name = str_replace("/home/bluezonekw/public_html/hunter/public/assets/adv/", "", $name);
                 // $name = str_replace("https://", "", $name);
+            }
+            $ids=Follower::where('to_id',$data['uid'])->pluck('user_id');
+            if(count($ids) > 0){
+                $this->save_notf('ADD_ADV',$prod->id
+                    , 'قام باضافة اعلان جديد',$data['uid'],$ids,'user','user',true);
             }
             DB::commit();
             return $this->apiResponse($request, trans('language.prods_created'), $prod, true);
