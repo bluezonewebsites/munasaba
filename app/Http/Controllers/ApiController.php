@@ -18,70 +18,79 @@ class ApiController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests , apiResponse;//,apiNotification;
     static function send_notf($fcm_token , $data,$app_name,$not = null ){
+        try {
+            $optionBuilder = new OptionsBuilder();
+            $optionBuilder->setTimeToLive(60*20);
+            $notificationBuilder = new PayloadNotificationBuilder($app_name);
+            $notificationBuilder->setBody($data)
+                ->setSound('default');
+            $dataBuilder = new PayloadDataBuilder();
+            $dataBuilder->addData(['a_data' => $not]);
 
-        $optionBuilder = new OptionsBuilder();
-        $optionBuilder->setTimeToLive(60*20);
-        $notificationBuilder = new PayloadNotificationBuilder($app_name);
-        $notificationBuilder->setBody($data)
-            ->setSound('default');
-        $dataBuilder = new PayloadDataBuilder();
-        $dataBuilder->addData(['a_data' => $not]);
+            $option = $optionBuilder->build();
+            $notification = $notificationBuilder->build();
+            $data = $dataBuilder->build();
+            // dd($data);
+            $token = $fcm_token;
 
-        $option = $optionBuilder->build();
-        $notification = $notificationBuilder->build();
-        $data = $dataBuilder->build();
-        // dd($data);
-        $token = $fcm_token;
+            $downstreamResponse = FCM::sendTo($token, $option, $notification, $data);
 
-        $downstreamResponse = FCM::sendTo($token, $option, $notification, $data);
+            $downstreamResponse->numberSuccess();
+            $downstreamResponse->numberFailure();
+            $downstreamResponse->numberModification();
+            // return Array - you must remove all this tokens in your database
+            $downstreamResponse->tokensToDelete();
+            // return Array (key : oldToken, value : new token - you must change the token in your database)
+            $downstreamResponse->tokensToModify();
+            // return Array - you should try to resend the message to the tokens in the array
+            $downstreamResponse->tokensToRetry();
+            // return Array (key:token, value:error) - in production you should remove from your database the tokens
+            $downstreamResponse->tokensWithError();
+        }catch (\Exception $e){
 
-        $downstreamResponse->numberSuccess();
-        $downstreamResponse->numberFailure();
-        $downstreamResponse->numberModification();
-        // return Array - you must remove all this tokens in your database
-        $downstreamResponse->tokensToDelete();
-        // return Array (key : oldToken, value : new token - you must change the token in your database)
-        $downstreamResponse->tokensToModify();
-        // return Array - you should try to resend the message to the tokens in the array
-        $downstreamResponse->tokensToRetry();
-        // return Array (key:token, value:error) - in production you should remove from your database the tokens
-        $downstreamResponse->tokensWithError();
+        }
+
     }
     static function send_notf_array($fcm_tokens , $data,$app_name,$not = null){
-        $optionBuilder = new OptionsBuilder();
-        $optionBuilder->setTimeToLive(60*20);
+        try {
 
-        $notificationBuilder = new PayloadNotificationBuilder($app_name);
-        $notificationBuilder->setBody($data)
-            ->setSound('default');
+            $optionBuilder = new OptionsBuilder();
+            $optionBuilder->setTimeToLive(60*20);
 
-        $dataBuilder = new PayloadDataBuilder();
-        $dataBuilder->addData($not->toarray());
-        // dd($dataBuilder);
-        $option = $optionBuilder->build();
-        $notification = $notificationBuilder->build();
-        $data = $dataBuilder->build();
-        // dd($data);
+            $notificationBuilder = new PayloadNotificationBuilder($app_name);
+            $notificationBuilder->setBody($data)
+                ->setSound('default');
 
-        // You must change it to get your tokens
+            $dataBuilder = new PayloadDataBuilder();
+            $dataBuilder->addData($not->toarray());
+            // dd($dataBuilder);
+            $option = $optionBuilder->build();
+            $notification = $notificationBuilder->build();
+            $data = $dataBuilder->build();
+            // dd($data);
 
-        $downstreamResponse = FCM::sendTo($fcm_tokens, $option, $notification, $data);
+            // You must change it to get your tokens
 
-        $downstreamResponse->numberSuccess();
-        $downstreamResponse->numberFailure();
-        $downstreamResponse->numberModification();
+            $downstreamResponse = FCM::sendTo($fcm_tokens, $option, $notification, $data);
 
-        // return Array - you must remove all this tokens in your database
-        $downstreamResponse->tokensToDelete();
+            $downstreamResponse->numberSuccess();
+            $downstreamResponse->numberFailure();
+            $downstreamResponse->numberModification();
 
-        // return Array (key : oldToken, value : new token - you must change the token in your database)
-        $downstreamResponse->tokensToModify();
+            // return Array - you must remove all this tokens in your database
+            $downstreamResponse->tokensToDelete();
 
-        // return Array - you should try to resend the message to the tokens in the array
-        $downstreamResponse->tokensToRetry();
+            // return Array (key : oldToken, value : new token - you must change the token in your database)
+            $downstreamResponse->tokensToModify();
 
-        // return Array (key:token, value:error) - in production you should remove from your database the tokens present in this array
-        $downstreamResponse->tokensWithError();
+            // return Array - you should try to resend the message to the tokens in the array
+            $downstreamResponse->tokensToRetry();
+
+            // return Array (key:token, value:error) - in production you should remove from your database the tokens present in this array
+            $downstreamResponse->tokensWithError();
+        }catch (\Exception $e){
+
+        }
 
     }
 
@@ -99,7 +108,9 @@ class ApiController extends BaseController
                     'nfrom'=>$nfrom,
                     'nto'=>$nto,
                 ]);
-                self::send_notf($user->regid,$body,$app,$not);
+                if($user->regid){
+                    self::send_notf($user->regid,$body,$app,$not);
+                }
             }
         }else{
             $not=null;
@@ -117,7 +128,7 @@ class ApiController extends BaseController
                     ]);
                 }
             }
-            $regids=User::wherein('id',$user_r)->where('notification',1)->pluck('regid');
+            $regids=User::wherein('id',$user_r)->whereNotNull('regid')->where('notification',1)->pluck('regid');
             self::send_notf_array($regids,$body,$app,$not);
         }
 

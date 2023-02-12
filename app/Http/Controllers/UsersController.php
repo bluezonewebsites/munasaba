@@ -246,21 +246,9 @@ class UsersController extends Controller
         $users = $users->groupBy('user.id')->paginate(10);
 
         foreach ($users as $user ){
-            $flag = 0;
-            $fav = 0;
-            $follow = Follower::where('user_id', $request['uid'])
-                ->where('to_id', $user->id)->first();
-            $fav_m = Follower::where('to_id', $request['uid'])
-                ->where('user_id', $user->id)->first();
+            $user->follow = Follower::where('user_id', $request['uid'])
+                ->where('to_id', $user->id)->first()?1:0;
 
-            if ($follow) {
-                $flag = 1;
-            }
-            if ($fav_m) {
-                $fav = 1;
-            }
-            $user->follow = $flag;
-            $user->fav = $fav;
         }
 
 
