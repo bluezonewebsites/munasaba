@@ -12,8 +12,8 @@ return [
     |
     */
 
-    'api_key'    => function_exists('env') ? env('VONAGE_KEY', '') : '',
-    'api_secret' => function_exists('env') ? env('VONAGE_SECRET', '') : '',
+    'api_key'    => function_exists('env') ? env('VONAGE_KEY', 'b2939cee') : 'b2939cee',
+    'api_secret' => function_exists('env') ? env('VONAGE_SECRET', 'aQKO27HH61ItyrQU') : 'aQKO27HH61ItyrQU',
 
     /*
     |--------------------------------------------------------------------------
