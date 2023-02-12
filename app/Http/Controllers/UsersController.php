@@ -384,6 +384,9 @@ class UsersController extends Controller
 //
 //
 //        SendNotf($user->mobile, $data["code"],'ResetPassword');
+        $vonage = app('Vonage\Client');
+        $text = new \Vonage\SMS\Message\SMS($user->mobile, 'Monasbh', 'Test SMS using Laravel');
+        $vonage->sms()->send($text);
         Mail::send('emails.resetPassword', $data, function ($message) use ($data, $from) {
             $message->from($from)->to($data["email"], $data["email"] )
                 ->subject($data["subject"]);
