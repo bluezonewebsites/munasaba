@@ -193,17 +193,18 @@ class QuestionController extends ApiController
                 $created_by= CommentOnQuestion::where('id',$request['comment_id'])->first();
                 if($created_by){
                     $created_by= $created_by->uid;
-                    $this->save_notf('LIKE_COMMENT',$request['comment_id']
+                    $this->save_notf('LIKE_REPLY_Questions',$request['comment_id']
                         , 'اعجب بتعليقك',$request['uid'],$created_by);
                 }
-            }else{
-                $created_by= CommentOnQuestion::where('id',$request['comment_id'])->first();
-                if($created_by){
-                    $created_by= $created_by->uid;
-                    $this->save_notf('LIKE_REPLY_Questions',$request['comment_id']
-                        , 'اعجب علي ردك',$request['uid'],$created_by);
-                }
             }
+//            else{
+//                $created_by= CommentOnQuestion::where('id',$request['comment_id'])->first();
+//                if($created_by){
+//                    $created_by= $created_by->uid;
+//                    $this->save_notf('LIKE_REPLY_Questions',$request['comment_id']
+//                        , 'اعجب علي ردك',$request['uid'],$created_by);
+//                }
+//            }
 
 
         }
