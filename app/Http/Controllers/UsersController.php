@@ -241,7 +241,9 @@ class UsersController extends Controller
         $users = $users->select(
             'user.*',
             'cities.name_ar as cities_name_ar',
-            'regions.name_en as regions_name_en'
+            'cities.name_en as cities_name_en',
+            'regions.name_en as regions_name_en',
+            'regions.name_ar as regions_name_ar'
         );
         $users = $users->groupBy('user.id')->paginate(10);
 
