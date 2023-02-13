@@ -268,15 +268,15 @@ class ProdsController extends ApiController
                 $created_by = CommentOnProd::where('id', $request['comment_id'])->first();
                 if ($created_by) {
                     $created_by = $created_by->uid;
-                    $this->save_notf('LIKE_COMMENT', $request['comment_id']
-                        , 'اعجب بتعليقك', $request['uid'], $created_by);
-                }
-            } else {
-                $created_by = ReplayOnComment::where('id', $request['comment_id'])->first();
-                if ($created_by) {
-                    $created_by = $created_by->uid;
                     $this->save_notf('LIKE_REPLY', $request['comment_id']
                         , 'اعجب علي ردك', $request['uid'], $created_by);
+                }
+            } else {
+                $created_by =Prod::where('id', $request['comment_id'])->first();
+                if ($created_by) {
+                    $created_by = $created_by->uid;
+                    $this->save_notf('LIKE_COMMENT', $request['comment_id']
+                        , 'اعجب بتعليقك', $request['uid'], $created_by);
                 }
             }
         }
