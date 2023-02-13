@@ -36,7 +36,7 @@ class ApiController extends BaseController
             // dd($data);
             $token = $fcm_token;
 
-            $downstreamResponse = FCM::sendTo($token, $option, $notification, $data);
+            $downstreamResponse = FCM::sendTo($token, $option, null, $data);
 
             $downstreamResponse->numberSuccess();
             $downstreamResponse->numberFailure();
@@ -74,7 +74,7 @@ class ApiController extends BaseController
 
             // You must change it to get your tokens
 
-            $downstreamResponse = FCM::sendTo($fcm_tokens, $option, $notification, $data);
+            $downstreamResponse = FCM::sendTo($fcm_tokens, $option, null, $data);
 
             $downstreamResponse->numberSuccess();
             $downstreamResponse->numberFailure();
@@ -112,12 +112,28 @@ class ApiController extends BaseController
                     'nto'=>$nto,
                 ]);
                 if($type=='CHAT'){
-                    $not->unseen_count = Message::where('room_id',$type_id)
-                                                    ->where('seen',0)->where('rid',$user->id)->count();
+                    $unseen_count = Message::where('room_id',$type_id)
+                        ->where('seen',0)->where('rid',$user->id)->count();
+                    $a_data=[
+                        'oid'=>$type_id,
+                        'uid'=>$user_r,
+                        'fid'=>$user_send,
+                        'ntype'=>$type,
+                        'ncontent'=>$body,
+                        'nfrom'=>$nfrom,
+                        'nto'=>$nto,
+                        'userf'=>$not->userf,
+                        'unseen_count'=>$unseen_count
+                    ];
+                    if($user->regid) {
+                        self::send_notf($user->regid, $body, $app, $a_data);
+                    }
+                }else{
+                    if($user->regid){
+                        self::send_notf($user->regid,$body,$app,$not);
+                    }
                 }
-                if($user->regid){
-                    self::send_notf($user->regid,$body,$app,$not);
-                }
+
             }
         }else{
             $not=null;
