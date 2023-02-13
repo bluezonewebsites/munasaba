@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\FcmTokenModel;
+use App\Models\Message;
 use App\Models\Notification;
+use App\Models\Room;
 use App\Models\User;
 use App\Traits\apiResponse;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Auth;
 use LaravelFCM\Message\OptionsBuilder;
 use LaravelFCM\Message\PayloadDataBuilder;
 use LaravelFCM\Message\PayloadNotificationBuilder;
@@ -108,6 +111,10 @@ class ApiController extends BaseController
                     'nfrom'=>$nfrom,
                     'nto'=>$nto,
                 ]);
+                if($type=='CHAT'){
+                    $not->unseen_count = Message::where('room_id',$type_id)
+                                                    ->where('seen',0)->where('rid',$user->id)->count();
+                }
                 if($user->regid){
                     self::send_notf($user->regid,$body,$app,$not);
                 }

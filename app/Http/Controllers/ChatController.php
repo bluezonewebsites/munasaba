@@ -26,9 +26,6 @@ class ChatController extends ApiController
     {
         $id = $request->room_id;
         $uid = Auth::id();
-        Message::where('room_id',$id)->where('rid',$uid)->update([
-            'seen'=>1
-        ]);
         $date['room'] = Room::where('id',$id)->first();
         if(! $date['room']){
             return $this->apiResponse($request, __('language.not_found'), null, false, 500);
@@ -40,6 +37,9 @@ class ChatController extends ApiController
                 'email','id','country_id','city_id','region_id','verified')
             ->first();
         $date['result'] =Message::where('room_id',$id)->latest('id')->get();
+        Message::where('room_id',$id)->where('rid',$uid)->update([
+            'seen'=>1
+        ]);
         return $this->apiResponse($request, trans('language.message'), $date, true);
 
     }
@@ -51,20 +51,20 @@ class ChatController extends ApiController
      */
     public function create()
     {
-        $sid = $_POST['sid'];
-        $rid = $_POST['rid'];
-        $mtype=$_POST['mtype'];
-        if ($mtype == 'IMAGE') {
-            $type=$_POST['mtype'];
-            $imgs = explode("##", $_POST['msg']);
-            //print_r($imgs);
-            $room_id=$_POST['room_id'];
-            for ($i = 0; $i < count($imgs); $i++) {
-                insertData("msgs", "rid,sid,room_id,msg,mtype", "$rid,$sid,$room_id,'$imgs[$i]','$mtype'");
-            }
-        } else {
-            insertData("msgs", getCols(), getValues());
-        }
+//        $sid = $_POST['sid'];
+//        $rid = $_POST['rid'];
+//        $mtype=$_POST['mtype'];
+//        if ($mtype == 'IMAGE') {
+//            $type=$_POST['mtype'];
+//            $imgs = explode("##", $_POST['msg']);
+//            //print_r($imgs);
+//            $room_id=$_POST['room_id'];
+//            for ($i = 0; $i < count($imgs); $i++) {
+//                insertData("msgs", "rid,sid,room_id,msg,mtype", "$rid,$sid,$room_id,'$imgs[$i]','$mtype'");
+//            }
+//        } else {
+//            insertData("msgs", getCols(), getValues());
+//        }
         // insertData("msgs", getCols(), getValues());
         //firebase($_POST['msg'], "chat", "user", "user", $rid, $sid);
     }
