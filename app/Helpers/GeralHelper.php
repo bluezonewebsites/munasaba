@@ -19,3 +19,28 @@
            ]);
             return true;
     }
+
+
+
+    function SendTwilio ($number,$code,$type='Signup'){
+        $receiverNumber = $number;
+        $message=__('word.welcome_app').' \n';
+        $message.= __('word.'.$type,['code'=>$code]);
+
+        try {
+
+            $account_sid = getenv("TWILIO_SID");
+            $auth_token = getenv("TWILIO_TOKEN");
+            $twilio_number = getenv("TWILIO_FROM");
+
+            $client = new Twilio\Rest\Client($account_sid, $auth_token);
+            $client->messages->create($receiverNumber, [
+                'from' => $twilio_number,
+                'body' => $message]);
+
+            dd('SMS Sent Successfully.');
+
+        } catch (Exception $e) {
+            dd("Error: ". $e->getMessage());
+        }
+    }

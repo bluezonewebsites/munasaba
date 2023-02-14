@@ -16,6 +16,7 @@
         "php-http/httplug": "^2.3",
         "php-http/message-factory": "^1.0",
         "symfony/http-client": "^6.2",
+        "twilio/sdk": "^6.44",
         "vonage/client": "^3.0",
         "vonage/vonage-laravel": "^1.0"
     },

@@ -102,7 +102,7 @@ class UsersController extends Controller
             return $this->apiResponse($request, trans('language.login'),$data, true);
         } catch (\Exception $e) {
             DB::rollback();
-                //            return $e->getMessage();
+            //            return $e->getMessage();
             return $this->apiResponse($request, trans('language.same_error'), null, false,500);
 
         }
@@ -306,22 +306,22 @@ class UsersController extends Controller
     public function getRateUser(Request $request)
     {
         $rate_user = DB::table('user_rates')
-        ->leftjoin('user as rated_user', 'rated_user.id', 'user_rates.user_rated_id')
-        ->leftjoin('user as from_user', 'from_user.id', 'user_rates.uid')
-        ->where('user_rates.uid',$request['uid'])
-        ->select(
-        'user_rates.*',
-        'rated_user.name as rated_user_name',
-        'rated_user.last_name as rated_last_name',
-        'rated_user.pic as rated_user_pic',
-        'from_user.name as from_user_name',
-        'from_user.last_name as from_last_name',
-        'from_user.pic as from_user_pic'
-    )->paginate(10);
-    // $blocked_user = UserBlocked::where('from_uid', $uid)->first();
-    // if ($blocked_user) {
-    //     $users = $users->where('user.uid', '!=', $blocked_user->to_uid);
-    // };
+            ->leftjoin('user as rated_user', 'rated_user.id', 'user_rates.user_rated_id')
+            ->leftjoin('user as from_user', 'from_user.id', 'user_rates.uid')
+            ->where('user_rates.uid',$request['uid'])
+            ->select(
+                'user_rates.*',
+                'rated_user.name as rated_user_name',
+                'rated_user.last_name as rated_last_name',
+                'rated_user.pic as rated_user_pic',
+                'from_user.name as from_user_name',
+                'from_user.last_name as from_last_name',
+                'from_user.pic as from_user_pic'
+            )->paginate(10);
+        // $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+        // if ($blocked_user) {
+        //     $users = $users->where('user.uid', '!=', $blocked_user->to_uid);
+        // };
         return $this->apiResponse($request, trans('language.created'), $rate_user, true);
     }
     public function reportUser(Request $request)
@@ -430,9 +430,9 @@ class UsersController extends Controller
     }
     Public function resendCode(Request $request){
         $user=User::find($request->user_id);
-            if(!$user){
-                return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
-            }
+        if(!$user){
+            return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
+        }
         $mob=$user->mobile;
         if($request->mobile){
             $mob=  $request->mobile;
@@ -505,13 +505,13 @@ class UsersController extends Controller
             return $this->apiResponse($request, __('language.unauthenticated'), null, false, 500);
         }
         if(Hash::check($request->old_password, $user->pass)){
-                $user -> pass = bcrypt($request->password);
-                $user->pass_v =$request->password;
-                $user->save();
+            $user -> pass = bcrypt($request->password);
+            $user->pass_v =$request->password;
+            $user->save();
             return $this->apiResponse($request, trans('language.reset_new_password'), null, true);
 
         }
-            return $this->apiResponse($request, __('language.password_failed'), null, false,500);
+        return $this->apiResponse($request, __('language.password_failed'), null, false,500);
 
 
     }
@@ -537,39 +537,39 @@ class UsersController extends Controller
         try {
             DB::beginTransaction();
             $uid= $user->id;
-               $Prods= Prod::where('uid',$uid)->pluck('id');
-                ProdRate::where('uid',$uid)->orWherein('prod_id',$Prods)->delete();
-                ProdRate::where('uid',$uid)->orWherein('prod_id',$Prods)->delete();
-                ProdImage::Wherein('prod_id',$Prods)->delete();
+            $Prods= Prod::where('uid',$uid)->pluck('id');
+            ProdRate::where('uid',$uid)->orWherein('prod_id',$Prods)->delete();
+            ProdRate::where('uid',$uid)->orWherein('prod_id',$Prods)->delete();
+            ProdImage::Wherein('prod_id',$Prods)->delete();
 
-                $Questions=Question::where('uid',$uid)->pluck('id');
-                QuestionReport::where('uid',$uid)->orwherein('q_id',$Questions)->delete();
-                Question::where('uid',$uid)->delete();
-                //type == 1 -> like on comment
-                //type ==0 ->  like on replay
-                $rates=ProdRate::where('uid',$uid)->pluck('id');
-                LikeOnProd::where('uid',$uid)->delete();
-                LikeOnProd::where('like_type',1)->wherein('comment_id',$Questions)->delete();
-                LikeOnProd::where('like_type',0)->wherein('comment_id',$rates)->delete();
-
-
-                UserBlocked::where('to_uid',$uid)->orwhere('from_uid',$uid)->delete();
-                UserRate::where('uid',$uid)->orwhere('user_rated_id',$uid)->delete();
-                UserReport::where('uid',$uid)->orwhere('from_uid',$uid)->delete();
+            $Questions=Question::where('uid',$uid)->pluck('id');
+            QuestionReport::where('uid',$uid)->orwherein('q_id',$Questions)->delete();
+            Question::where('uid',$uid)->delete();
+            //type == 1 -> like on comment
+            //type ==0 ->  like on replay
+            $rates=ProdRate::where('uid',$uid)->pluck('id');
+            LikeOnProd::where('uid',$uid)->delete();
+            LikeOnProd::where('like_type',1)->wherein('comment_id',$Questions)->delete();
+            LikeOnProd::where('like_type',0)->wherein('comment_id',$rates)->delete();
 
 
+            UserBlocked::where('to_uid',$uid)->orwhere('from_uid',$uid)->delete();
+            UserRate::where('uid',$uid)->orwhere('user_rated_id',$uid)->delete();
+            UserReport::where('uid',$uid)->orwhere('from_uid',$uid)->delete();
 
-                $rooms=Room::where('user1',$uid)->orwhere('user2',$uid)->pluck('id');
-                ChatReport::where('uid',$uid)->orwherein('room_id',$rooms)->delete();
 
-                ProdRate::where('uid',$uid)->delete();
-                Room::where('user1',$uid)->orwhere('user2',$uid)->delete();
-                User::where('id',$uid)->delete();
+
+            $rooms=Room::where('user1',$uid)->orwhere('user2',$uid)->pluck('id');
+            ChatReport::where('uid',$uid)->orwherein('room_id',$rooms)->delete();
+
+            ProdRate::where('uid',$uid)->delete();
+            Room::where('user1',$uid)->orwhere('user2',$uid)->delete();
+            User::where('id',$uid)->delete();
             DB::commit();
             return $this->apiResponse($request, trans('language.user_deleted'), [], true);
         } catch (\Exception $e) {
             DB::rollback();
-                       return $e->getMessage();
+            return $e->getMessage();
             return $this->apiResponse($request, trans('language.same_error'), null, false,500);
 
         }
