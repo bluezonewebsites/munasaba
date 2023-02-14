@@ -87,7 +87,7 @@ class ProdsController extends ApiController
         $prods= Prod::where('country_id', $country_id)
             ->where('cat_id', $cat_id)->latest()->paginate(10);
 
-            $prods->images=DB::table('prod_imgs')
+        $prods->images=DB::table('prod_imgs')
             ->leftjoin('prods', 'prods.id', 'prod_imgs.prod_id')
             ->select('prod_imgs.*',)->get();
 
@@ -99,28 +99,28 @@ class ProdsController extends ApiController
     public function getAllProdsByFilter(Request $request)
     {
         $prods= Prod::where('country_id', $request['country_id']);
-            if (isset($request['city_id'])) {
-                $prods->where('prods.city_id', $request['city_id']);
-            }
-            if (isset($request['cat_id'])) {
-                $prods->where('prods.cat_id', $request['cat_id']);
-            }
-            if (isset($request['sub_cat_id'])) {
-                $prods->where('prods.sub_cat_id', $request['sub_cat_id']);
-            }
-            if (isset($request['tajeer_or_sell'])) {
-                $prods->where('prods.tajeer_or_sell', $request['tajeer_or_sell']);
-            }
-            if (isset($request['high_price'])) {
-                $prods->OrderBy('prods.price', 'DESC');
-            }
-            if (isset($request['low_price'])) {
-                $prods->OrderBy('prods.price', 'ASC');
-            }
-            if (isset($request['newest'])) {
-                $prods->OrderBy('prods.created_at', 'DESC');
-            }
-            $prods=$prods->paginate(10);
+        if (isset($request['city_id'])) {
+            $prods->where('prods.city_id', $request['city_id']);
+        }
+        if (isset($request['cat_id'])) {
+            $prods->where('prods.cat_id', $request['cat_id']);
+        }
+        if (isset($request['sub_cat_id'])) {
+            $prods->where('prods.sub_cat_id', $request['sub_cat_id']);
+        }
+        if (isset($request['tajeer_or_sell'])) {
+            $prods->where('prods.tajeer_or_sell', $request['tajeer_or_sell']);
+        }
+        if (isset($request['high_price'])) {
+            $prods->OrderBy('prods.price', 'DESC');
+        }
+        if (isset($request['low_price'])) {
+            $prods->OrderBy('prods.price', 'ASC');
+        }
+        if (isset($request['newest'])) {
+            $prods->OrderBy('prods.created_at', 'DESC');
+        }
+        $prods=$prods->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $prods, true);
     }
 
@@ -151,7 +151,7 @@ class ProdsController extends ApiController
         }
         $prods = $prods->where(function ($query) use ($keyword) {
             $query->where('name', 'LIKE', '%' . $keyword . '%')
-            ->orWhere('descr', 'LIKE', '%' . $keyword . '%');
+                ->orWhere('descr', 'LIKE', '%' . $keyword . '%');
         })->latest()->paginate(10);
 
         return $this->apiResponse($request, trans('language.message'), $prods, true);
@@ -193,7 +193,7 @@ class ProdsController extends ApiController
         if($created_by){
             $created_by= $created_by->uid;
             $this->save_notf('REPLY_COMMENT',$request['comment_id']
-                , 'قام بالرد علي تعليقك',$request['uid'],$created_by);
+                , 'قام بالرد علي تعليقك',Auth::id(),$created_by);
         }
 
         return $this->apiResponse($request, trans('language.created'), $replay_on_comment, true);
@@ -225,16 +225,16 @@ class ProdsController extends ApiController
         };
 
         $replies=$replies->select('comment_on_rates.*'
-        ,'user.name as user_name'
-        ,'user.pic as user_pic'
-        ,'user.last_name as user_last_name'
-        ,'user.verified as user_verified'
+            ,'user.name as user_name'
+            ,'user.pic as user_pic'
+            ,'user.last_name as user_last_name'
+            ,'user.verified as user_verified'
         );
         $replies=$replies->paginate(10);
 
         foreach ($replies as $reply){
-               $count= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->count();
-               $LikeOnProduid= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->where('uid',$uid)->first();
+            $count= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->count();
+            $LikeOnProduid= LikeOnProd::where('comment_id',$reply->id)->where('like_type',0)->where('uid',$uid)->first();
             $reply->like_count=$count;
             $reply->is_like=$LikeOnProduid?1:0;
         }
@@ -265,15 +265,15 @@ class ProdsController extends ApiController
             ]);
 
             if ($request['like_type'] == 0) {
-                $created_by = CommentOnProd::where('id', $request['comment_id'])->first();
-                if ($created_by) {
-                    $this->save_notf('LIKE_REPLY', $request['comment_id']
-                        , 'اعجب علي ردك', $request['uid'], $created_by->uid);
+                $r=ReplayOnComment::where('id', $request['comment_id'])->first();
+                if ($r) {
+                    $this->save_notf('LIKE_REPLY', $r->comment_id
+                        , 'اعجب علي ردك', $request['uid'], $r->uid);
                 }
             } else {
-                $created_by =Prod::where('id', $request['comment_id'])->first();
+                $created_by =CommentOnProd::where('id', $request['comment_id'])->first();
                 if ($created_by) {
-                    $this->save_notf('LIKE_COMMENT',$created_by->id
+                    $this->save_notf('LIKE_COMMENT',$created_by->prod_id
                         , 'اعجب بتعليقك', $request['uid'], $created_by->uid);
                 }
             }
@@ -426,9 +426,9 @@ class ProdsController extends ApiController
         $prod->sell_cost = isset($request->sell_cost) ? $request->sell_cost : $prod->sell_cost;
         $prod->save();
         $prods = DB::table('prods')
-        ->where('prods.id',$request['id'])
-        ->select('prods.*',)
-        ->get();
+            ->where('prods.id',$request['id'])
+            ->select('prods.*',)
+            ->get();
         return $this->apiResponse($request, trans('language.updatedSuccessfully'), $prods, true);
 
     }

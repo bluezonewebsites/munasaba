@@ -35,11 +35,11 @@ class QuestionController extends ApiController
             ->whereNull('questions.deleted_at')
             ->where('questions.uid',$uid)
             ->select('questions.*'
-            ,'user.name as name'
-            ,'user.pic as user_pic'
-            ,'user.last_name as last_name'
-            ,'user.verified as user_verified',
-            DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+                ,'user.name as name'
+                ,'user.pic as user_pic'
+                ,'user.last_name as last_name'
+                ,'user.verified as user_verified',
+                DB::raw('COUNT(comment_on_questions.quest_id) as comments')
             )->groupBy('questions.id')
             ->latest('id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $question, true);
@@ -52,18 +52,18 @@ class QuestionController extends ApiController
             ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
             ->where('questions.city_id', $city_id)
             ->whereNull('questions.deleted_at')
-        ->select('questions.*'
-        ,'user.name as name'
-        ,'user.pic as user_pic'
-        ,'user.last_name as last_name'
-        ,'user.verified as user_verified',
-        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
-    )->groupBy('questions.id');
+            ->select('questions.*'
+                ,'user.name as name'
+                ,'user.pic as user_pic'
+                ,'user.last_name as last_name'
+                ,'user.verified as user_verified',
+                DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+            )->groupBy('questions.id');
         if (isset($request['uid'])) {
             $question->where('questions.uid', $request['uid']);
         }
         $question=$question->latest('id')->paginate(10);
-    return $this->apiResponse($request, trans('language.message'), $question, true);
+        return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
 
@@ -72,23 +72,23 @@ class QuestionController extends ApiController
         $uid = $request['uid'];
         $country_id = $request['country_id'];
         $question = DB::table('questions')
-        ->leftjoin('user','user.id','questions.uid')
-        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
-        ->where('questions.country_id', $country_id)
-        ->whereNull('questions.deleted_at')
-        ->select('questions.*'
-        ,'user.name as name'
-        ,'user.pic as user_pic'
-        ,'user.last_name as last_name'
-        ,'user.verified as user_verified',
-        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
-    );
+            ->leftjoin('user','user.id','questions.uid')
+            ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id')
+            ->where('questions.country_id', $country_id)
+            ->whereNull('questions.deleted_at')
+            ->select('questions.*'
+                ,'user.name as name'
+                ,'user.pic as user_pic'
+                ,'user.last_name as last_name'
+                ,'user.verified as user_verified',
+                DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+            );
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if($blocked_user){
             $question->where('questions.uid', '!=', $blocked_user);
         }
         $question=$question->latest('id')->get();
-         return $this->apiResponse($request, trans('language.message'), $question, true);
+        return $this->apiResponse($request, trans('language.message'), $question, true);
     }
 
     public function searchQuestion(Request $request)
@@ -97,8 +97,8 @@ class QuestionController extends ApiController
 //        $country_id = $request['country_id'];
         $uid = $request['uid'];
         $question = DB::table('questions')
-        ->leftjoin('user','user.id','questions.uid')
-        ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id');
+            ->leftjoin('user','user.id','questions.uid')
+            ->leftjoin('comment_on_questions','comment_on_questions.quest_id','questions.id');
         $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if ($blocked_user) {
             $question=$question->where('prods.uid', '!=', $blocked_user->to_uid);
@@ -106,13 +106,13 @@ class QuestionController extends ApiController
         $question=$question->where('questions.quest', 'LIKE', '%' . $keyword . '%')
 //        ->where('questions.country_id', $country_id)
             ->whereNull('questions.deleted_at')
-        ->select('questions.*'
-        ,'user.name as name'
-        ,'user.pic as user_pic'
-        ,'user.last_name as last_name'
-        ,'user.verified as user_verified',
-        DB::raw('COUNT(comment_on_questions.quest_id) as comments')
-    )->groupBy('questions.id');
+            ->select('questions.*'
+                ,'user.name as name'
+                ,'user.pic as user_pic'
+                ,'user.last_name as last_name'
+                ,'user.verified as user_verified',
+                DB::raw('COUNT(comment_on_questions.quest_id) as comments')
+            )->groupBy('questions.id');
         $question=$question->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $question, true);
     }
@@ -174,9 +174,9 @@ class QuestionController extends ApiController
         //type == 1 -> like on comment
         //type ==0 ->  like on replay
         $like=LikeOnQuest::where('uid',$request['uid'])
-        ->where('comment_id',$request['comment_id'])
-        ->where('like_type',$request['like_type'])
-        ->first();
+            ->where('comment_id',$request['comment_id'])
+            ->where('like_type',$request['like_type'])
+            ->first();
         if($like){
             $like->delete();
             return $this->apiResponse($request,trans('language.deleted'), null, true);
@@ -192,9 +192,9 @@ class QuestionController extends ApiController
             {
                 $created_by= CommentOnQuestion::where('id',$request['comment_id'])->first();
                 if($created_by){
-                    $created_by= $created_by->uid;
-                    $this->save_notf('LIKE_REPLY_Questions',$request['comment_id']
-                        , 'اعجب بتعليقك',$request['uid'],$created_by);
+
+                    $this->save_notf('LIKE_REPLY_Questions',$created_by->quest_id
+                        , 'اعجب بتعليقك',$request['uid'], $created_by->uid);
                 }
             }
 //            else{
@@ -242,18 +242,18 @@ class QuestionController extends ApiController
     public function getCommentsReplayQuest(Request $request){
         $uid = $request['uid'];
         $comment= DB::table('like_on_replay')
-        ->leftjoin('user','user.id','like_on_replay.uid')
-        ->leftjoin('comment_on_questions','comment_on_questions.id','like_on_replay.comment_id');        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
+            ->leftjoin('user','user.id','like_on_replay.uid')
+            ->leftjoin('comment_on_questions','comment_on_questions.id','like_on_replay.comment_id');        $blocked_user = UserBlocked::where('from_uid', $uid)->first();
         if ($blocked_user) {
             $comment=$comment->where('like_on_replay.uid', '!=', $blocked_user->to_uid);
         }
         $comment=$comment->select('like_on_replay.*'
-        ,'user.name as user_name'
-        ,'user.pic as user_pic'
-        ,'user.last_name as user_last_name'
-        ,'user.verified as user_verified'
-        ,'comment_on_questions.comment as replay_comment',
-    )->groupBy('like_on_replay.id');
+            ,'user.name as user_name'
+            ,'user.pic as user_pic'
+            ,'user.last_name as user_last_name'
+            ,'user.verified as user_verified'
+            ,'comment_on_questions.comment as replay_comment',
+        )->groupBy('like_on_replay.id');
         $comment=$comment->latest('id')->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $comment, true);
 
