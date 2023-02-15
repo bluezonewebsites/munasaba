@@ -20,7 +20,7 @@ use FCM;
 class ApiController extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests , apiResponse;//,apiNotification;
-    static function send_notf($fcm_token , $data,$app_name,$not = null ){
+    static function send_notf($fcm_token , $data,$app_name,$not = null ,$type_mob=false){
         try {
             $optionBuilder = new OptionsBuilder();
             $optionBuilder->setTimeToLive(60*20);
@@ -35,8 +35,13 @@ class ApiController extends BaseController
             $data = $dataBuilder->build();
             // dd($data);
             $token = $fcm_token;
+            if($type_mob){
+                $downstreamResponse = FCM::sendTo($token, $option,$notification , $data);
+            }else{
+                $downstreamResponse = FCM::sendTo($token, $option,null , $data);
 
-            $downstreamResponse = FCM::sendTo($token, $option,$notification , $data);
+            }
+
 
             $downstreamResponse->numberSuccess();
             $downstreamResponse->numberFailure();
@@ -54,7 +59,7 @@ class ApiController extends BaseController
         }
 
     }
-    static function send_notf_array($fcm_tokens , $data,$app_name,$not = null){
+    static function send_notf_array($fcm_tokens , $data,$app_name,$not = null,$type_mob=false){
         try {
 
             $optionBuilder = new OptionsBuilder();
@@ -73,8 +78,12 @@ class ApiController extends BaseController
             // dd($data);
 
             // You must change it to get your tokens
+            if($type_mob){
+                $downstreamResponse = FCM::sendTo($fcm_tokens, $option,$notification , $data);
+            }else{
+                $downstreamResponse = FCM::sendTo($fcm_tokens, $option,null , $data);
 
-            $downstreamResponse = FCM::sendTo($fcm_tokens, $option, null, $data);
+            }
 
             $downstreamResponse->numberSuccess();
             $downstreamResponse->numberFailure();
@@ -116,7 +125,7 @@ class ApiController extends BaseController
                         ->where('seen',0)->where('rid',$user->id)->count();
                 }
                 if($user->regid){
-                    self::send_notf($user->regid,$body,$app,$not);
+                    self::send_notf($user->regid,$body,$app,$not,$user->type_mob);
                 }
             }
         }else{
@@ -135,8 +144,14 @@ class ApiController extends BaseController
                     ]);
                 }
             }
-            $regids=User::wherein('id',$user_r)->whereNotNull('regid')->where('notification',1)->pluck('regid');
-            self::send_notf_array($regids,$body,$app,$not);
+            $regids=User::wherein('id',$user_r)->whereNotNull('regid')->where('type_mob',0)->where('notification',1)->pluck('regid');
+            $regids_ios=User::wherein('id',$user_r)->whereNotNull('regid')->where('type_mob',1)->where('notification',1)->pluck('regid');
+            if($regids){
+                self::send_notf_array($regids,$body,$app,$not,false);
+            }
+            if($regids_ios) {
+                self::send_notf_array($regids_ios, $body, $app,$not, true);
+            }
         }
 
 

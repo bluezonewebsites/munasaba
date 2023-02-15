@@ -43,9 +43,10 @@ class NotificationController extends ApiController
 
     public function save_token(Request $request)
     {
-
+        $type=$request->type == 'IOS' ? 1:0;
         $user=User::where('id',Auth::id())->update([
-                    'regid'=>$request->fcm_token
+                    'regid'=>$request->fcm_token,
+                    'type_mob'=>$type
                 ]);
         return $this->apiResponse($request, trans('language.message'), false, true);
 
