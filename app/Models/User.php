@@ -38,7 +38,8 @@ class User extends Authenticatable
         'nots',
         'regid',
         'activation_code',
-        'pass_v'
+        'pass_v',
+        'type_mob'
     ];
 
     /**
