@@ -39,6 +39,7 @@ class User extends Authenticatable
         'regid',
         'activation_code',
         'pass_v',
+        'is_advertiser',
         'type_mob'
     ];
 

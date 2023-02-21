@@ -22,25 +22,7 @@ class FavController extends ApiController
         $fav = Prod::wherehas('fav',function ($q) use ($request){
             $q->where('fav.uid',$request['uid']);
             })
-//        $fav = DB::table('fav')
-//            ->leftjoin('prods as p','p.id','fav.prod_id')
-//            ->leftjoin('countries','countries.id','p.country_id')
-//            ->leftjoin('user','user.id','fav.uid')
-//            ->where('fav.uid',$request['uid'])
-//            ->whereNull('p.deleted_at')
-//        ->select('fav.*'
-//        ,'p.price as prod_price'
-//        ,'p.img as prod_image'
-//        ,'p.name as prod_name'
-//        ,'p.loc as prod_location'
-//        ,'p.tajeer_or_sell as prod_tajeer_or_sell'
-//        ,'user.name as name'
-//        ,'user.last_name as last_name'
-//        ,'user.verified as user_verified'
-//        ,'countries.name_ar as countries_name_ar'
-//        ,'countries.name_ar as countries_name_ar'
-//        ,'countries.currency_ar as currency_ar'
-//        )
+
         ->paginate(10);
         return $this->apiResponse($request, trans('language.message'), $fav, true);
     }

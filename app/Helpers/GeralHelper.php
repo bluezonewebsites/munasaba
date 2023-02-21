@@ -20,7 +20,19 @@
             return true;
     }
 
+    function SendSmsOut ($number,$code,$type='Signup'){
 
+        $response = \Illuminate\Support\Facades\Http::withHeaders([
+            'User-Agent' => 'Some Agent',
+        ])->asForm()->Post('https://monasbh.multi-kw.com/serv.php',[
+            'method'=>'send_sms_out',
+            'mobile'=>$number,
+            'code'=>$code ,
+            "type"=>$type ,
+
+        ]);
+
+    }
 
     function SendTwilio ($number,$code,$type='Signup'){
         $receiverNumber = $number;
