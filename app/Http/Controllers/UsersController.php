@@ -56,8 +56,7 @@ class UsersController extends Controller
         }
         try {
             DB::beginTransaction();
-//            $phone_code = rand(10000, 99999);
-            $phone_code=1111;
+            $phone_code = rand(10000, 99999);
 
             $image_name=null;
             $folder = 'image/users/';
@@ -86,6 +85,7 @@ class UsersController extends Controller
                 'pic' => $image_name,
                 'activation_code' => $phone_code,
             ]);
+            SendSmsOut($data['mobile'],$phone_code,'Signup');
 //            SendNotf($data['mobile'], $phone_code,'Signup');
             Auth::login($user);
             $item = auth()->user();
@@ -359,28 +359,9 @@ class UsersController extends Controller
         $data["code"] = $user->activation_code;
         $data["name"] = $user->name;
         $data["email"] = $user->email;
-//        $vonage = app('Vonage\Client');
-//        dd($vonage);
-//        $text = new \Vonage\SMS\Message\SMS("201009156765", 'Monasbh', 'Test SMS using Laravel');
-//        $response = $vonage->sms()->send($text);
 
-//        $message = $response->current();
-//        dd($response);
-//        if ($message->getStatus() == 0) {
-//            echo "The message was sent successfully\n";
-//        } else {
-//            echo "The message failed with status: " . $message->getStatus() . "\n";
-//        }
-//
-//
-//        SendNotf($user->mobile, $data["code"],'ResetPassword');
-        $vonage = app('Vonage\Client');
-        $text = new \Vonage\SMS\Message\SMS($user->mobile, 'Monasbh', 'Test SMS using Laravel');
-        $vonage->sms()->send($text);
-        Mail::send('emails.resetPassword', $data, function ($message) use ($data, $from) {
-            $message->from($from)->to($data["email"], $data["email"] )
-                ->subject($data["subject"]);
-        });
+        SendSmsOut($user->mobile,$data["code"],'forgetPass');
+
         return $this->apiResponse($request, trans('language.sendresetPassword'), $user->id, true);
     }
     public function checkCode(Request $request)
@@ -438,8 +419,8 @@ class UsersController extends Controller
             $mob=  $request->mobile;
         }
         $phone_code = rand(10000, 99999);
-        $phone_code=1111;
         $user->activation_code=$phone_code;
+        SendSmsOut($mob,$phone_code,'forgetPass');
         $user->save();
         return $this->apiResponse($request, trans('language.message'), $user->id, true);
 

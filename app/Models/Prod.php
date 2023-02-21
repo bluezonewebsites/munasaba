@@ -91,6 +91,7 @@ class Prod extends Model
        $data["user_last_name"] = $this->user->last_name??'';
        $data["user_pic"] = $this->user->pic??'';
        $data["user_verified"] = $this->user->verified??'';
+       $data["is_advertiser"] = $this->user->is_advertiser??0;
        $data["countries_name_ar"] = $this->country->name_ar??'';
        $data["countries_name_en"] = $this->country->name_en??'';
        $data["countries_currency_ar"] = $this->country->currency_ar??'';

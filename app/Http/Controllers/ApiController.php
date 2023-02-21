@@ -124,8 +124,14 @@ class ApiController extends BaseController
                     $not->unseen_count = Message::where('room_id',$type_id)
                         ->where('seen',0)->where('rid',$user->id)->count();
                 }
+
+
                 if($user->regid){
-                    self::send_notf($user->regid,$body,$app,$not,$user->type_mob);
+                    if($user->type_mob){
+                        self::send_notf($user->regid, $body, $app,$not, true);
+                    }else {
+                        self::send_notf($user->regid, $body, $app, $not);
+                    }
                 }
             }
         }else{
@@ -157,92 +163,4 @@ class ApiController extends BaseController
 
 
     }
-
-
-    // function send_not($oid, $not_type, $rid, $sid, $content)
-    // {
-    //     insertData('nots', 'oid,uid,fid,ntype,ncontent,nfrom,nto', "$oid,$rid,$sid,'$not_type','$content','user','user'");
-    //     firebase($oid, $not_type, "user", "user", $rid, $sid);
-    // }
-    // function firebase($orderid, $title, $totype, $fromtype, $toid, $fromid)
-    // {
-
-    //      global $conn;
-    //     error_reporting(-1);
-    //     ini_set('display_errors', 'On');
-    //     $firebase = new Firebase();
-    //     $push = new Push();
-
-    //     $payload = array();
-    //     $payload['article_data'] = isset($_POST['article_data']) ? $_POST['article_data'] : '';
-
-    //     $result = $conn->query("SELECT * FROM $fromtype where id=$fromid");
-    //     if ($result->num_rows > 0) {
-    //         $row = $result->fetch_assoc();
-    //         $name = $row['name'];
-    //         $pic = $row['pic'];
-    //         $mobile = $row['mobile'];
-    //     }
-    //     $result = $conn->query("SELECT * FROM $totype where id=$toid");
-    //     if ($result->num_rows > 0) {
-    //         $row = $result->fetch_assoc();
-    //         $regId = $row['regid'];
-    //     }
-
-    //     $push->setTitle($orderid . "##" . $title);
-    //     $push->setMessage($name . "##" . $pic . "##" . $mobile . "##" . $fromid);
-    //     $push->setImage("");
-    //     $push->setIsBackground(TRUE);
-    //     $push->setPayload($payload);
-
-    //     $push_type = 'individual';
-    //     $json = '';
-    //     $response = '';
-
-    //     if ($push_type == 'topic') {
-    //         $json = $push->getPush();
-    //         $response = $firebase->sendToTopic('global', $json);
-    //     } else if ($push_type == 'individual') {
-    //         $json = $push->getPush();
-    //         $firebase->send($regId, $json);
-    //         if ($title == "chat") {
-    //             $push->setTitle($name);
-    //             $push->setMessage($orderid);
-    //             $json = $push->getPush2();
-    //             $firebase->sendBG($regId, $json);
-
-    //         } else if ($title == "ADD_ADV") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("اضاف اعلان جديد");
-    //         } else if ($title == "ASK_REPLY") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("رد علي سؤالك");
-    //         } else if ($title == "COMMENT_ADV") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("قام بالتعليق علي اعلانك");
-    //         } else if ($title == "FOLLOW") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("قام بمتابعتك");
-    //         } else if ($title == "LIKE_COMMENT") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("اعجب بتعليقك");
-    //         }else if ($title == "LIKE_REPLY") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("اعجب علي ردك");
-    //         }else if ($title == "REPLY_COMMENT") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("رد علي تعليقك");
-    //         }
-    //         else if ($title == "LIKE_REPLY_Questions") {
-    //             $push->setTitle($name);
-    //              $push->setMessage("اعجب علي ردك");
-    //         }
-    //         else if ($title == "OFFER_PRICE") {
-    //             $push->setTitle($name);
-    //             $push->setMessage("ارسل اليك عرض");
-    //         }
-    //         $json = $push->getPush2();
-    //         //$firebase->sendBG($regId, $json);
-    //     }
-    // }
 }
